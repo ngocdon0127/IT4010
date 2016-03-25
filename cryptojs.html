@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Crypto Decrypt</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+	<!-- Latest compiled JavaScript -->
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
+	<style>
+	</style>
+	<script>
+		function ob(x){
+			return document.getElementById(x);
+		}
+		function encrypt () {
+			var text = ob('text').value;
+			var key = ob('key').value;
+			var encrypted = CryptoJS.AES.encrypt(text, key);
+			ob('encrypted').value = encrypted.toString();
+		}
+		function decrypt() {
+			var encrypted = ob('encrypted').value;
+			// try{
+				var decrypted = CryptoJS.AES.decrypt(encrypted, ob('key').value);
+				ob('decrypted').value = decrypted.toString(CryptoJS.enc.Utf8);
+			// }
+			// catch (e){
+				// ob('decrypted').value = "Key không đúng.";
+			// }
+		}
+	</script>
+</head>
+<body>
+	<div class="container">
+			<div class="form-group">
+				<input type="text" id="text" class="form-control" placeholder="Text"/>
+			</div>
+			<div class="form-group">
+				<input type="text" id="key" class="form-control" placeholder="Key"/>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success" onclick="encrypt()">Encrypt</button>
+			</div>
+			<div class="form-group">
+				<textarea id="encrypted" class="form-control"></textarea>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success" onclick="decrypt()">Decrypt</button>
+			</div>
+			<div class="form-group">
+				<input type="text" id="decrypted" class="form-control"/>
+			</div>
+	</div>
+</body>
+</html>

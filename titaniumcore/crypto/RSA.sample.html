@@ -1,0 +1,594 @@
+<html>
+    <head>
+	<title>JavaScript Asynchronous RSA Key Generation Implementation - Titaniumcore Project</title>
+	<script src="../tools/packages.js"></script>
+	<script src="../tools/isarray.js"></script>
+	<script src="../tools/binary.js"></script>
+	<script src="../tools/elapse.js"></script>
+	<script src="../tools/trace.async.js"></script>
+
+	<script src="BigInteger.init1.js"></script>
+	<script src="RSA.init1.js"></script>
+	<script src="SecureRandom.js"></script>
+	<script src="BigInteger.init2.js"></script>
+	<script src="RSA.init2.js"></script>
+
+	<script src="../nonstructured/nonstructured.js"></script>
+	<script src="BigInteger.init3.js"></script>
+	<script src="RSA.init3.js"></script>
+
+	<script src="Cipher.js"></script>
+	<script src="SOAEP.js"></script>
+	<script src="RSAKeyFormat.js"></script>
+	<script src="BitPadding.js"></script>
+	<script src="cryptico.js"></script>
+
+	<script>
+		function ob (x) {
+			return document.getElementById(x);
+		}
+
+		// function seedrandom(seed, use_entropy){
+	 //        var key = [];
+	 //        var arc4;
+
+	 //        // Flatten the seed string or build one from local entropy if needed.
+	 //        seed = mixkey(flatten(
+	 //        use_entropy ? [seed, pool] : arguments.length ? seed : [new Date().getTime(), pool, window], 3), key);
+
+	 //        // Use the seed to initialize an ARC4 generator.
+	 //        arc4 = new ARC4(key);
+
+	 //        // Mix the randomness into accumulated entropy.
+	 //        mixkey(arc4.S, pool);
+
+	 //        // Override Math.random
+	 //        // This function returns a random double in [0, 1) that contains
+	 //        // randomness in every bit of the mantissa of the IEEE 754 value.
+	 //        math['random'] = function random()
+	 //        { // Closure to return a random double:
+	 //            var n = arc4.g(chunks); // Start with a numerator n < 2 ^ 48
+	 //            var d = startdenom; //   and denominator d = 2 ^ 48.
+	 //            var x = 0; //   and no 'extra last byte'.
+	 //            while (n < significance)
+	 //            { // Fill up all significant digits by
+	 //                n = (n + x) * width; //   shifting numerator and
+	 //                d *= width; //   denominator and generating a
+	 //                x = arc4.g(1); //   new least-significant-byte.
+	 //            }
+	 //            while (n >= overflow)
+	 //            { // To avoid rounding up, before adding
+	 //                n /= 2; //   last byte, shift everything
+	 //                d /= 2; //   right using integer math until
+	 //                x >>>= 1; //   we have exactly the desired bits.
+	 //            }
+	 //            return (n + x) / d; // Form the number within [0, 1).
+	 //        };
+
+	 //        // Return the seed that was used
+	 //        return seed;
+	 //    };
+
+		// function SHA256(s){
+		// 	var chrsz   = 8;
+		// 	var hexcase = 0;
+		
+		// 	function safe_add (x, y) {
+		// 		var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+		// 		var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+		// 		return (msw << 16) | (lsw & 0xFFFF);
+		// 	}
+		 
+		// 	function S (X, n) { return ( X >>> n ) | (X << (32 - n)); }
+		// 	function R (X, n) { return ( X >>> n ); }
+		// 	function Ch(x, y, z) { return ((x & y) ^ ((~x) & z)); }
+		// 	function Maj(x, y, z) { return ((x & y) ^ (x & z) ^ (y & z)); }
+		// 	function Sigma0256(x) { return (S(x, 2) ^ S(x, 13) ^ S(x, 22)); }
+		// 	function Sigma1256(x) { return (S(x, 6) ^ S(x, 11) ^ S(x, 25)); }
+		// 	function Gamma0256(x) { return (S(x, 7) ^ S(x, 18) ^ R(x, 3)); }
+		// 	function Gamma1256(x) { return (S(x, 17) ^ S(x, 19) ^ R(x, 10)); }
+		 
+		// 	function core_sha256 (m, l) {
+		// 		var K = new Array(0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5, 0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174, 0xE49B69C1, 0xEFBE4786, 0xFC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA, 0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x6CA6351, 0x14292967, 0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85, 0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070, 0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3, 0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2);
+		// 		var HASH = new Array(0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19);
+		// 		var W = new Array(64);
+		// 		var a, b, c, d, e, f, g, h, i, j;
+		// 		var T1, T2;
+		
+		// 		m[l >> 5] |= 0x80 << (24 - l % 32);
+		// 		m[((l + 64 >> 9) << 4) + 15] = l;
+		
+		// 		for ( var i = 0; i<m.length; i+=16 ) {
+		// 			a = HASH[0];
+		// 			b = HASH[1];
+		// 			c = HASH[2];
+		// 			d = HASH[3];
+		// 			e = HASH[4];
+		// 			f = HASH[5];
+		// 			g = HASH[6];
+		// 			h = HASH[7];
+		
+		// 			for ( var j = 0; j<64; j++) {
+		// 				if (j < 16) W[j] = m[j + i];
+		// 				else W[j] = safe_add(safe_add(safe_add(Gamma1256(W[j - 2]), W[j - 7]), Gamma0256(W[j - 15])), W[j - 16]);
+		
+		// 				T1 = safe_add(safe_add(safe_add(safe_add(h, Sigma1256(e)), Ch(e, f, g)), K[j]), W[j]);
+		// 				T2 = safe_add(Sigma0256(a), Maj(a, b, c));
+		
+		// 				h = g;
+		// 				g = f;
+		// 				f = e;
+		// 				e = safe_add(d, T1);
+		// 				d = c;
+		// 				c = b;
+		// 				b = a;
+		// 				a = safe_add(T1, T2);
+		// 			}
+		
+		// 			HASH[0] = safe_add(a, HASH[0]);
+		// 			HASH[1] = safe_add(b, HASH[1]);
+		// 			HASH[2] = safe_add(c, HASH[2]);
+		// 			HASH[3] = safe_add(d, HASH[3]);
+		// 			HASH[4] = safe_add(e, HASH[4]);
+		// 			HASH[5] = safe_add(f, HASH[5]);
+		// 			HASH[6] = safe_add(g, HASH[6]);
+		// 			HASH[7] = safe_add(h, HASH[7]);
+		// 		}
+		// 		return HASH;
+		// 	}
+		
+		// 	function str2binb (str) {
+		// 		var bin = Array();
+		// 		var mask = (1 << chrsz) - 1;
+		// 		for(var i = 0; i < str.length * chrsz; i += chrsz) {
+		// 			bin[i>>5] |= (str.charCodeAt(i / chrsz) & mask) << (24 - i%32);
+		// 		}
+		// 		return bin;
+		// 	}
+		
+		// 	function Utf8Encode(string) {
+		// 		string = string.replace(/\r\n/g,"\n");
+		// 		var utftext = "";
+		
+		// 		for (var n = 0; n < string.length; n++) {
+		
+		// 			var c = string.charCodeAt(n);
+		
+		// 			if (c < 128) {
+		// 				utftext += String.fromCharCode(c);
+		// 			}
+		// 			else if((c > 127) && (c < 2048)) {
+		// 				utftext += String.fromCharCode((c >> 6) | 192);
+		// 				utftext += String.fromCharCode((c & 63) | 128);
+		// 			}
+		// 			else {
+		// 				utftext += String.fromCharCode((c >> 12) | 224);
+		// 				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+		// 				utftext += String.fromCharCode((c & 63) | 128);
+		// 			}
+		
+		// 		}
+		
+		// 		return utftext;
+		// 	}
+		
+		// 	function binb2hex (binarray) {
+		// 		var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
+		// 		var str = "";
+		// 		for(var i = 0; i < binarray.length * 4; i++) {
+		// 			str += hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8+4)) & 0xF) +
+		// 			hex_tab.charAt((binarray[i>>2] >> ((3 - i%4)*8  )) & 0xF);
+		// 		}
+		// 		return str;
+		// 	}
+		
+		// 	s = Utf8Encode(s);
+		// 	return binb2hex(core_sha256(str2binb(s), s.length * chrsz));
+		// }
+
+		// function mixkey(seed, key, smear, j)
+	 //    {
+	 //        seed += ''; // Ensure the seed is a string
+	 //        smear = 0;
+	 //        for (j = 0; j < seed.length; j++)
+	 //        {
+	 //            key[lowbits(j)] = lowbits((smear ^= key[lowbits(j)] * 19) + seed.charCodeAt(j));
+	 //        }
+	 //        seed = '';
+	 //        for (j in key)
+	 //        {
+	 //            seed += String.fromCharCode(key[j]);
+	 //        }
+	 //        return seed;
+	 //    }
+
+	 //    function flatten(obj, depth, result, prop, typ)
+	 //    {
+	 //        result = [];
+	 //        typ = typeof (obj);
+	 //        if (depth && typ == 'object')
+	 //        {
+	 //            for (prop in obj)
+	 //            {
+	 //                if (prop.indexOf('S') < 5)
+	 //                { // Avoid FF3 bug (local/sessionStorage)
+	 //                    try
+	 //                    {
+	 //                        result.push(flatten(obj[prop], depth - 1));
+	 //                    }
+	 //                    catch (e)
+	 //                    {}
+	 //                }
+	 //            }
+	 //        }
+	 //        return (result.length ? result : obj + (typ != 'string' ? '\0' : ''));
+	 //    }
+	</script>
+
+	<script>
+	    __unit( "RSA.sample1.html" );
+	    __uses( "BigInteger.init1.js" );
+	    __uses( "BigInteger.init2.js" );
+	    __uses( "RSA.init1.js" );
+	    __uses( "RSA.init2.js" );
+	    __uses( "RSA.init3.js" );
+	    __uses( "RSAKeyFormat.js" );
+
+	    // import
+	    var BigInteger = __import( this,"titaniumcore.crypto.BigInteger" );
+	    var RSA = __import( this,"titaniumcore.crypto.RSA" );
+            var RSAKeyFormat = __import( packageRoot, "titaniumcore.crypto.RSAKeyFormat" );
+
+	    RSA.installKeyFormat( RSAKeyFormat );
+
+            // install key format.
+
+	    // main
+	    var timerID = null;
+	    var radioIndex=0;
+	    var radioCount = 4;
+	    function rotateRadio(){
+		radioIndex = ( radioIndex +1 ) % 4;
+		for ( var i=0; i<radioCount; i++ ) {
+		    document.form1["r"+i].checked = false;
+		}
+		document.form1["r"+radioIndex].checked = true;
+	    }
+	    function outputTrace(v){
+		var d = iframe.document;
+		d.open();
+		d.write( "<html><body><pre>");
+		d.write( v );
+		d.write( "</pre></body></html>");
+		d.close();
+	    }
+	    function outputTrace2(v){
+		document.form1.indicator.value=v;
+	    }
+	    function nextBytes( bs ) {
+		for ( var i=0; i<bs.length; i++ ) {
+		    bs[i]= Math.floor( Math.random() * 256 );
+		}
+		return bs;
+	    }
+	    function variableText( rsaKey, bytelen ) {
+		var text =  nextBytes( new array( bytelen ) );
+		// text.unshift(0);
+		text[0] &= 0x7f;
+		// text[0] = 0x00;
+
+		var text = new BigInteger( text );
+		return testCipher( rsaKey, text );
+	    }
+
+	    function testCipher( rsaKey, bitext ) {
+		var text = bitext;
+		var encrypted = rsaKey.processPublic( text );
+		var decrypted = rsaKey.processPrivate( encrypted );
+
+		function Result() {
+		    this.text = function(){
+			return text;
+		    };
+		    this.encrypted = function() {
+			return encrypted;
+		    };
+		    this.decrypted = function() {
+			return decrypted;
+		    };
+		    this.toString = function(){
+			var s = "";
+			s+=( "t:" + text.     toString(16) );
+			s+="\r\n";
+			s+=( "e:" + encrypted.toString(16) );
+			s+="\r\n";
+			s+=( "d:" + decrypted.toString(16) );
+			s+="\r\n";
+			if ( this.result() ) {
+			    s+="OK\r\n";
+			    s+="\r\n";
+			} else {
+			    s+="NG\r\n";
+			    s+="\r\n";
+			}
+			return s;
+		    };
+		    this.lengthCheck = function() {
+			var v = text.compareTo( rsaKey.n ) ;
+			if ( v<0 ) {
+			    // s+=( "text < n" );
+			    // s+="\r\n";
+			    return "text < n";
+			} else if (v==0) {
+			    // s+=( "text == n !!!!" );
+			    // s+="\r\n";
+			    return "n=text";
+			} else {
+			    // s+=( "n < text !!!!" );
+			    // s+="\r\n";
+			    return "n<text";
+			}
+		    };
+		    this.result = function(){
+			if ( text.compareTo( decrypted ) == 0 ) {
+			    return true;
+			} else {
+			    return false;
+			}
+		    };
+		};
+		return new Result();
+	    }
+	    function StringBuilder() {
+		this.value = "";
+		this.append = function(v){
+		    this.value += v.toString();
+		    return this;
+		};
+		this.toString = function() {
+		    return this.value;
+		};
+	    }
+	    function executeTest(){
+			if ( timerID != null ) {
+			    return;
+			}
+			passphrase = ob('passphrase').value;
+			// Math.seedrandom(sha256.hex(passphrase));
+			var keylen = parseInt( document.form1.keylen.value );
+			var exp = 65537;
+
+			var rsaKey = new RSA();
+			var resultList = [];
+			var testCount=10;
+
+			var progress = function(c){
+			    if ( c % 4 == 0 ) {
+				rotateRadio();
+			    }
+			    if ( c % 64 == 0 ) {
+				outputTrace2( "processing..." + c );
+			    }
+			};
+			var result = function( rsa ) {
+			};
+			var finalization = function() {
+			    resultList.push( variableText( rsaKey, keylen / 8 ) );
+			    return --testCount<=0;
+			}
+			var done = function( succeeded, count, time ,startTime, finishTime ) {
+			    timerID = null;
+
+			    var s = new StringBuilder();
+
+			    function add( caption, message ) {
+				s.append( "<h2>" );
+				s.append( caption );
+				s.append( "</h2>" );
+				s.append( "<blockquote>" );
+				s.append( message );
+				s.append( "</blockquote>" );
+			    }
+			    function col( caption, message ) {
+				s.append( "<tr>")
+				s.append( "<td>")
+				s.append( caption )
+				s.append( "</td>")
+				s.append( "<td>")
+				s.append( message )
+				s.append( "</td>")
+				s.append( "</tr>")
+			    }
+
+			    s.append( "<html>" );
+			    s.append( "<head>" );
+			    s.append( "<style>" );
+			    s.append( "h1 { font-size:15px; }" );
+			    s.append( "h2 { font-size:12px; }" );
+			    s.append( "</style>" );
+			    s.append( "</head>" );
+			    s.append( "<body>" );
+			    s.append( "<h1>" );
+			    s.append( "<h1>" );
+			    s.append( "a RSA key was successfully generated." );
+			    s.append( "</h1>" );
+
+			    s.append( "<h2>" );
+			    s.append( "RSA Key" );
+			    s.append( "</h2>" );
+			    s.append( "<blockquote>" );
+			    s.append( "<table>" );
+			    s.append( "<tr>" );
+			    s.append( "<td>" );
+			    // s.append( "<a target='_top' href='RSA.sample2.html?"
+			    //     +"n="+base64x_encode( rsaKey.n.toByteArray() ) + "&"
+			    //     +"e="+                rsaKey.e                 + "&"
+			    //     +"d="+base64x_encode( rsaKey.d.toByteArray() ) + "&"
+			    //     + "'>Encryption/Decryption Test</a>" 
+			    // );
+			    s.append( "<a target='_top' href='RSA.sample2.html?"
+				+"pr="+base64x_encode( rsaKey.privateKeyBytes() ) + "&"
+				+"pu="+base64x_encode( rsaKey.publicKeyBytes() ) + "&"
+				+"e=" +                rsaKey.e                  + "&"
+				+"pa=" +             ( rsaKey.n.bitLength()<256 ? "0" : "1") + "&"
+				+"dum=he"
+				+ "'>Encryption/Decryption Test</a>" 
+			    );
+			    s.append( "</td>" );
+			    s.append( "</tr>" );
+			    s.append( "</table>" );
+			    s.append( "<table border=1>" );
+				col( "n="    , ( rsaKey.n     == null ? "" : rsaKey.n    .toString(16) + "(" + rsaKey.n.bitLength() + ")" ) );
+				col( "e="    , ( rsaKey.e     == null ? "" : rsaKey.e    .toString(16) ) );
+				col( "d="    , ( rsaKey.d     == null ? "" : rsaKey.d    .toString(16) + "(" + rsaKey.d.bitLength() + ")" ) );
+				col( "p="    , ( rsaKey.p     == null ? "" : rsaKey.p    .toString(16) ) );
+				col( "q="    , ( rsaKey.q     == null ? "" : rsaKey.q    .toString(16) ) );
+				col( "dmp1=" , ( rsaKey.dmp1  == null ? "" : rsaKey.dmp1 .toString(16) ) );
+				col( "dmq1=" , ( rsaKey.dmq1  == null ? "" : rsaKey.dmq1 .toString(16) ) );
+				col( "coeff=", ( rsaKey.coeff == null ? "" : rsaKey.coeff.toString(16) ) );
+			    s.append( "</table>" );
+			    s.append( "</blockquote>" );
+
+			    add( "Elapsed Time", time + "ms" );
+			    add( "Step Count", count );
+			    add( "Start Time", startTime.toString() );
+			    add( "Finished Time", finishTime.toString() );
+
+			    var allOK = true;
+			    for ( var tc=0; tc<resultList.length; tc++ ) {
+				var result = resultList[tc];
+				if ( ! result.result() ) {
+				    allOK = false;
+				}
+			    }
+
+			    if ( 0<resultList.length ) {
+				add( "Variable Text Test :", allOK ? "All OK" : "Error Found" );
+				add( "Test Report :", "" );
+			    }
+
+			    for ( var tc=0; tc<resultList.length; tc++ ) {
+				var result = resultList[tc];
+				s.append( "<h2>" );
+				s.append( "Variable Text Test " + (tc+1) );
+				s.append( "</h2>" );
+				s.append( "<blockquote>" );
+				s.append( "<table border=1>" );
+				col( "text",result.text().toString(16) );
+				col( "encrypted",result.encrypted().toString(16) );
+				col( "decrypted",result.decrypted().toString(16) );
+				col( "result",result.result() ? "OK":"NG");
+				s.append( "</table>" );
+				s.append( "</blockquote>" );
+			    }
+
+			    s.append( "</body>" );
+			    s.append( "</html>" );
+
+			    outputTrace( s.toString() );
+			    outputTrace2( "");
+			};
+
+			// var generator = rsaKey.stepping_generate( keylen, exp );
+			// timerID = ( [ generator, /*finalization,*/ EXIT ] ).ready().frequency(1).timeout(1).progress(progress).done(done).go();
+			// timerID = rsaKey.generateAsync( keylen, exp, progress, result, done );
+			// timerID = RSAMessageFormat.generateAsync( keylen, exp, progress, result, done );
+			timerID = rsaKey.generateAsync( keylen, exp, progress, result, done );
+
+	    }
+	    function cancelTest(){
+			if ( timerID != null ) {
+			    var id = timerID;
+			    timerID = null;
+			    clearInterval( id );
+			    outputTrace( "Canceled." );
+			    outputTrace2( "");
+			}
+	    }
+	    var i=0;
+	    function tst(){
+			iframe.document.open();
+			iframe.document.write("<html><body>"+(i++)+"</body></html>");
+			iframe.document.close();
+	    }
+	</script>
+	<style>
+	    h1 {
+		font-size:20px;
+	    }
+	    h2 {
+		font-size:12px;
+	    }
+	</style>
+    </head>
+    <body>
+	<h1>JavaScript Asynchronous RSA Key Generation futuring Cancelation</h1>
+	<p>
+	This page is a demonstration of JavaScript RSA key generation which 
+	is executed asynchronously. Generally RSA key generation takes
+	several minutes. It occasionally takes several hours. A direct
+	implementation of RSA key generation makes web browsers freezed
+	and generates a lot of warning message boxes.</p>
+	<p>
+	This demonstration generates RSA key asynchronously.  It will
+	generate even very long lengthed RSA key such as 8192bit without freezing your browser
+	since it is executed asynchronously.  Cancelation is also available.
+	Try the cancel button.
+	</p>
+	<form name="form1" >
+	    <b>Configuration</b><br>
+	    <blockquote>
+	    <!-- <b>exponent</b>
+	    <select name="exp">
+		<option value="3">3</option>
+		<option value="11">11</option>
+		<option value="13">13</option>
+		<option value="17">17</option>
+		<option value="19">19</option>
+		<option value="65537" selected >65537</option>
+	    </select> -->
+	    <b>Passphrase</b>
+	    <input type="text" id="passphrase" name="passphrase" />
+	    /
+	    <b>key length</b>
+	    <select name="keylen">
+		<option value="16">16bit</option>
+		<option value="32">32bit</option>
+		<option value="64">64bit</option>
+		<option value="128">128bit</option>
+		<option value="256" selected>256bit</option>
+		<option value="512">512bit</option>
+		<option value="1024">1024bit</option>
+		<option value="2048">2048bit</option>
+		<option value="4096">4096bit</option>
+		<option value="8192">8192bit</option>
+		<option value="16384">16384bit</option>
+		<option value="32768">32768bit</option>
+		<option value="65536">65536bit</option>
+	    </select>
+
+
+	    <input type="button" name="generate" value="Generate" onClick="executeTest()" >
+	    <input type="button" name="cancel" value="Cancel" onClick="cancelTest()">
+	    <!-- <input type="button" name="test" value="Test" onClick="tst()"> -->
+	    </blockquote>
+	    <b>Result</b>
+	    <input type="radio" name="r0" value="0" >
+	    <input type="radio" name="r1" value="1" >
+	    <input type="radio" name="r2" value="2" >
+	    <input type="radio" name="r3" value="3" >
+	    <input type="text" name="indicator" value"">
+	    <br>
+	    <blockquote>
+		<!--<textarea name="area" cols=80 rows=20></textarea><br>-->
+	    <iframe name="iframe" width=900 height=300 ></iframe>
+	    </blockquote>
+	</form>
+	<b> Contacts </b><br>
+	<blockquote>
+	Ats Oka [ <a href="http://oka.nu">http://oka.nu</a> ]
+	</blockquote>
+    </body>
+</html>
+
+<!-- vim: set noexpandtab ts=8: -->
