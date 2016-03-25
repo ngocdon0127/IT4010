@@ -195,6 +195,45 @@
 			<a class="btn btn-primary" data-toggle="modal" href='#modal-decrypt' onclick="resetModal()">Decrypt</a>
 		</div>
 
+		<div class="form-group">
+			<input type="file" name="attach" id="attach" multiple>
+			<textarea name="file-info" id="file-info" cols="30" rows="10"></textarea>
+			<button class="btn btn-info" id="btnReadFile">Read File</button>
+		</div>
+
+		<script>
+			function handleFileSelect (event) {
+				var files = event.target.files;
+				for (var i = 0; i < files.length; i++) {
+					file = files[i];
+					console.log(file);
+				};
+
+			}
+			ob('attach').addEventListener('change', handleFileSelect, false);
+
+			function readFile () {
+				var files = ob('attach').files;
+				file = files[0];
+				console.log('read File: ');
+				console.log(file);
+				var reader = new FileReader();
+				reader.onloadend = function (evt){
+					if (evt.target.readyState == FileReader.DONE){
+						ob('file-info').value = ob('file-info').innerHTML = evt.target.result;
+						ob('data').value = evt.target.result;
+					}
+				}
+				var blob = file.slice(0, file.size);
+				reader.readAsBinaryString(blob);
+			}
+
+			// http://www.movable-type.co.uk/scripts/aes.html
+			// http://tutorialzine.com/2013/11/javascript-file-encrypter/
+
+			ob('btnReadFile').addEventListener('click', readFile);
+		</script>
+
 		<div class="modal fade" id="modal-encrypt">
 			<div class="modal-dialog">
 				<div class="modal-content">
