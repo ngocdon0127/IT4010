@@ -14,7 +14,7 @@
 	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
 	<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
 	<script src="http://cdn.rawgit.com/eligrey/FileSaver.js/master/FileSaver.js">/* note cannot run in web worker */</script>
-	<script src="download.js"></script>
+	<!-- <script src="download.js"></script> -->
 	<style>
 	</style>
 	<script>
@@ -73,57 +73,112 @@
 				ob('attach').addEventListener('change', handleFileSelect, false);
 				a = $('#btnDownload');
 
-				function encryptFile () {
+				var tmpcipher = '';
+				var tmpFileName = '';
+
+				function encryptFileSync () {
 					var files = ob('attach').files;
 					file = files[0];
 					console.log('read File: ');
 					console.log(file);
+					tmpFileName = file.name;
 					var reader = new FileReader();
 					reader.onload = function (evt){
 						// if (evt.target.readyState == FileReader.DONE){
-						// 	// ob('file-info').value = ob('file-info').innerHTML = evt.target.result;
-						// 	// ob('data').value = evt.target.result;
-						// 	// console.log(evt.target.result);
-						// 	// console.log(CryptoJS.AES.encrypt(evt.target.result, ob('key').value).toString());
-						// saveAs(new Blob([unescape(encodeURIComponent(CryptoJS.AES.encrypt(evt.target.result, ob('key').value).toString()))], {Type: 'text/plain'}), file.name + '.encrypted');
 						var encrypted = CryptoJS.AES.encrypt(evt.target.result, ob('key').value);
 						a.attr('href', 'data:application/octet-stream,' + encrypted);
 						a.attr('download', file.name + '.encrypted');
-						saveAs(new Blob([encrypted], {Type: 'application/octet-stream'}), file.name + '.encrypted');
+						// saveAs(new Blob([encrypted], {Type: 'application/octet-stream'}), file.name + '.encrypted');
+						// ob('file-info').value = encrypted;
+						tmpcipher = encrypted;
+						console.log('encrypted');
 
 					}
 					// var blob = file.slice(0, file.size);
 					reader.readAsDataURL(file);
 				}
 
-				// function ab2str(buf) {
-				// 	return String.fromCharCode.apply(null, new Uint8Array(buf));
-				// }
 
-				// http://www.movable-type.co.uk/scripts/aes.html
-				// http://tutorialzine.com/2013/11/javascript-file-encrypter/
+				function encryptFile () {
+					var files = ob('attach').files;
+					file = files[0];
+					tmpFileName = file.name;
+					if (typeof(Worker) !== 'undefined'){
+						if (typeof(ew) == 'undefined'){
+							ew = new Worker('file-worker.js');
+							ew.postMessage({
+								type: 'encrypt',
+								file: file,
+								key: ob('key').value
+							});
+						}
+						ew.onmessage = function (event) {
+							console.log('data received');
+							tmpcipher = event.data.cipher;
+							ew.terminate();
+							ew = undefined;
+							// ob('file-info').value = event.data.cipher;
+						}
+					}
+					else{
+						alert('Does not support web worker');
+					}
+				}
 
 				ob('btnEncryptFile').addEventListener('click', encryptFile);
 
+				function decryptFileSync () {
+					var cipher = tmpcipher;
+					var fileName = tmpFileName;
+					var decrypted = CryptoJS.AES.decrypt(cipher, ob('key').value).toString(CryptoJS.enc.Latin1);
+					console.log('start saving');
+					saveAs(dataURLToBlob(decrypted), fileName);
+					console.log('finish saving');
+				}
+
 				function decryptFile () {
-					var files = ob('attach').files;
-					file = files[0];
-					// console.log(file);
-					var reader = new FileReader();
-					reader.onload = function (evt){
-						// saveAs(new Blob([CryptoJS.AES.decrypt(decodeURIComponent(escape(evt.target.result)), ob('key').value).toString(CryptoJS.enc.Latin1)], {Type: 'data:application/octet-stream'}), file.name.substring(0, file.name.indexOf('.encrypted')));
-						// }
-						var decrypted = CryptoJS.AES.decrypt(evt.target.result, ob('key').value).toString(CryptoJS.enc.Utf8);
-						var mime = decrypted.substring(5, decrypted.indexOf(',') + 1);
-						console.log(mime);
-						// saveAs(new Blob([decrypted.substring(decrypted.indexOf(',') + 1)], {Type: mime}), file.name.replace('.encrypted',''));
-						// document.location = decrypted;
-						download(decrypted, file.name.replace('.encrypted', ''), mime);
-						a.attr('href', decrypted);
-						a.attr('download', file.name.replace('.encrypted',''));
+					var cipher = tmpcipher;
+					var fileName = tmpFileName;
+					if (typeof(Worker) !== 'undefined'){
+						if (typeof(de) == 'undefined'){
+							dw = new Worker('file-worker.js');
+							dw.postMessage({
+								type: 'decrypt',
+								cipher: cipher,
+								key: ob('key').value
+							});
+						}
+						dw.onmessage = function (evt) {
+							dataURL = evt.data.dataURL;
+							saveAs(dataURLToBlob(dataURL), fileName);
+							dw.terminate();
+							dw = undefined;
+						}
 					}
-					// var blob = file.slice(0, file.size);
-					reader.readAsText(file);
+				}
+
+				var dataURLToBlob = function(dataURL) {
+					var BASE64_MARKER = ';base64,';
+					if (dataURL.indexOf(BASE64_MARKER) == -1) {
+						var parts = dataURL.split(',');
+						var contentType = parts[0].split(':')[1];
+						var raw = decodeURIComponent(parts[1]);
+
+						return new Blob([raw], {type: contentType});
+					}
+
+					var parts = dataURL.split(BASE64_MARKER);
+					var contentType = parts[0].split(':')[1];
+					var raw = window.atob(parts[1]);
+					var rawLength = raw.length;
+
+					var uInt8Array = new Uint8Array(rawLength);
+
+					for (var i = 0; i < rawLength; ++i) {
+					  uInt8Array[i] = raw.charCodeAt(i);
+					}
+
+					return new Blob([uInt8Array], {type: contentType});
 				}
 
 				ob('btnDecryptFile').addEventListener('click', decryptFile);
