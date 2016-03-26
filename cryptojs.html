@@ -70,6 +70,7 @@
 
 				}
 				ob('attach').addEventListener('change', handleFileSelect, false);
+				ob('btnDecryptFile').disabled = true;
 
 				var tmpcipher = '';
 				var tmpFileName = '';
@@ -109,10 +110,12 @@
 
 				// Async Functions => Good
 
-				function encryptFile () {
+				function encryptFile (evt) {
 					var files = ob('attach').files;
 					file = files[0];
 					tmpFileName = file.name;
+					evt.target.disabled = true;
+					evt.target.innerHTML = 'Encrypting...';
 					if (typeof(Worker) !== 'undefined'){
 						if (typeof(ew) == 'undefined'){
 							ew = new Worker('file-worker.js');
@@ -123,8 +126,10 @@
 							});
 						}
 						ew.onmessage = function (event) {
-							alert('data received');
-							console.log('data received');
+							evt.target.disabled = false;
+							evt.target.innerHTML = 'Encrypt File';
+							ob('file-info').value = 'File has been encrypted.';
+							ob('btnDecryptFile').disabled = false;
 							tmpcipher = event.data.cipher;
 							ew.terminate();
 							ew = undefined;
@@ -137,9 +142,11 @@
 
 				ob('btnEncryptFile').addEventListener('click', encryptFile);
 
-				function decryptFile () {
+				function decryptFile (evt) {
 					var cipher = tmpcipher;
 					var fileName = tmpFileName;
+					evt.target.disabled = true;
+					evt.target.innerHTML = 'Decrypting...';
 					if (typeof(Worker) !== 'undefined'){
 						if (typeof(de) == 'undefined'){
 							dw = new Worker('file-worker.js');
@@ -149,10 +156,13 @@
 								key: ob('key').value
 							});
 						}
-						dw.onmessage = function (evt) {
+						dw.onmessage = function (event) {
 							var blob = undefined;
 							try{
-								blob = dataURLToBlob(evt.data.dataURL);
+								blob = dataURLToBlob(event.data.dataURL);
+								// console.log(evt.target);
+								evt.target.disabled = false;
+								evt.target.innerHTML = 'Decrypt File';
 								saveAs(blob, fileName);
 							}
 							catch (e){
