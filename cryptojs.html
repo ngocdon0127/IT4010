@@ -59,7 +59,6 @@
 				<textarea name="file-info" id="file-info" cols="30" rows="10"></textarea>
 				<button class="btn btn-info" id="btnEncryptFile">Encrypt File</button>
 				<button class="btn btn-info" id="btnDecryptFile">Decrypt File</button>
-				<a class="btn btn-info" id="btnDownload">Download File</a>
 			</div>
 			<script>
 				function handleFileSelect (event) {
@@ -71,10 +70,11 @@
 
 				}
 				ob('attach').addEventListener('change', handleFileSelect, false);
-				a = $('#btnDownload');
 
 				var tmpcipher = '';
 				var tmpFileName = '';
+
+				// Sync Functions
 
 				function encryptFileSync () {
 					var files = ob('attach').files;
@@ -98,6 +98,16 @@
 					reader.readAsDataURL(file);
 				}
 
+				function decryptFileSync () {
+					var cipher = tmpcipher;
+					var fileName = tmpFileName;
+					var decrypted = CryptoJS.AES.decrypt(cipher, ob('key').value).toString(CryptoJS.enc.Latin1);
+					console.log('start saving');
+					saveAs(dataURLToBlob(decrypted), fileName);
+					console.log('finish saving');
+				}
+
+				// Async Functions => Good
 
 				function encryptFile () {
 					var files = ob('attach').files;
@@ -113,11 +123,11 @@
 							});
 						}
 						ew.onmessage = function (event) {
+							alert('data received');
 							console.log('data received');
 							tmpcipher = event.data.cipher;
 							ew.terminate();
 							ew = undefined;
-							// ob('file-info').value = event.data.cipher;
 						}
 					}
 					else{
@@ -126,15 +136,6 @@
 				}
 
 				ob('btnEncryptFile').addEventListener('click', encryptFile);
-
-				function decryptFileSync () {
-					var cipher = tmpcipher;
-					var fileName = tmpFileName;
-					var decrypted = CryptoJS.AES.decrypt(cipher, ob('key').value).toString(CryptoJS.enc.Latin1);
-					console.log('start saving');
-					saveAs(dataURLToBlob(decrypted), fileName);
-					console.log('finish saving');
-				}
 
 				function decryptFile () {
 					var cipher = tmpcipher;
@@ -149,14 +150,21 @@
 							});
 						}
 						dw.onmessage = function (evt) {
-							dataURL = evt.data.dataURL;
-							saveAs(dataURLToBlob(dataURL), fileName);
+							var blob = undefined;
+							try{
+								blob = dataURLToBlob(evt.data.dataURL);
+								saveAs(blob, fileName);
+							}
+							catch (e){
+								alert('Key không đúng');
+							}
 							dw.terminate();
 							dw = undefined;
 						}
 					}
 				}
 
+				// dataURLToBlob => get from https://github.com/ebidel/filer.js/blob/master/src/filer.js#L137
 				var dataURLToBlob = function(dataURL) {
 					var BASE64_MARKER = ';base64,';
 					if (dataURL.indexOf(BASE64_MARKER) == -1) {
