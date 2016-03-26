@@ -12,6 +12,8 @@
 	<script language="JavaScript" type="text/javascript" src="cryptico/rsa.js"></script>
 	<script language="JavaScript" type="text/javascript" src="cryptico/aes.js"></script>
 	<script language="JavaScript" type="text/javascript" src="cryptico/api.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js">/* r224/r298 don't work! */</script>
+	<script src="http://cdn.rawgit.com/eligrey/FileSaver.js/master/FileSaver.js">/* note cannot run in web worker */</script>
 	<script>
 
 		// self-invoking function
@@ -119,9 +121,16 @@
 		// // console.log(JSON.stringify(RSAKey));
 		// console.log(cryptico.privateKeyFromString(cryptico.privateKeyString(RSAKey)));
 		function generateRSAKey () {
-			var passphrase = ob('passphrase').value;
+			// Passphrase
+			// var passphrase = ob('passphrase').value;
+			// var bitlen = ob('bitlen').value;
+			// Math.seedrandom(sha256.hex(passphrase));
+
+			// Random no.
 			var bitlen = ob('bitlen').value;
-			Math.seedrandom(sha256.hex(passphrase));
+			var passphrase = (new Date()).getTime();
+			console.log(passphrase);
+			passphrase += 'x';
 			var RSAKey = cryptico.generateRSAKey(passphrase, bitlen);
 			ob('pub').value = cryptico.publicKeyString(RSAKey);
 			ob('priv').value = cryptico.privateKeyString(RSAKey);
@@ -194,45 +203,6 @@
 			<a class="btn btn-primary" data-toggle="modal" href='#modal-encrypt' onclick="resetModal()">Encrypt</a>
 			<a class="btn btn-primary" data-toggle="modal" href='#modal-decrypt' onclick="resetModal()">Decrypt</a>
 		</div>
-
-		<div class="form-group">
-			<input type="file" name="attach" id="attach" multiple>
-			<textarea name="file-info" id="file-info" cols="30" rows="10"></textarea>
-			<button class="btn btn-info" id="btnReadFile">Read File</button>
-		</div>
-
-		<script>
-			function handleFileSelect (event) {
-				var files = event.target.files;
-				for (var i = 0; i < files.length; i++) {
-					file = files[i];
-					console.log(file);
-				};
-
-			}
-			ob('attach').addEventListener('change', handleFileSelect, false);
-
-			function readFile () {
-				var files = ob('attach').files;
-				file = files[0];
-				console.log('read File: ');
-				console.log(file);
-				var reader = new FileReader();
-				reader.onloadend = function (evt){
-					if (evt.target.readyState == FileReader.DONE){
-						ob('file-info').value = ob('file-info').innerHTML = evt.target.result;
-						ob('data').value = evt.target.result;
-					}
-				}
-				var blob = file.slice(0, file.size);
-				reader.readAsBinaryString(blob);
-			}
-
-			// http://www.movable-type.co.uk/scripts/aes.html
-			// http://tutorialzine.com/2013/11/javascript-file-encrypter/
-
-			ob('btnReadFile').addEventListener('click', readFile);
-		</script>
 
 		<div class="modal fade" id="modal-encrypt">
 			<div class="modal-dialog">
