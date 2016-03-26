@@ -110,10 +110,16 @@
 
 				// Async Functions => Good
 
+				var ew = undefined;
+				var dw = undefined;
+				var oldSize = 0;
+
 				function encryptFile (evt) {
+					var date1 = new Date();
 					var files = ob('attach').files;
 					file = files[0];
 					tmpFileName = file.name;
+					oldSize = file.size;
 					evt.target.disabled = true;
 					evt.target.innerHTML = 'Encrypting...';
 					if (typeof(Worker) !== 'undefined'){
@@ -126,11 +132,15 @@
 							});
 						}
 						ew.onmessage = function (event) {
+							var date2 = new Date();
 							evt.target.disabled = false;
 							evt.target.innerHTML = 'Encrypt File';
 							ob('file-info').value = 'File has been encrypted.';
 							ob('btnDecryptFile').disabled = false;
 							tmpcipher = event.data.cipher;
+							ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";
+							ob('file-info').value += "\nSize after Encrypting: " + (tmpcipher.length / 1024 / 1024).toFixed(2) + " MiB.";
+							ob('file-info').value += "\nTime Encrypt: " + (date2.getTime() - date1.getTime()) + " ms.";
 							ew.terminate();
 							ew = undefined;
 						}
@@ -148,7 +158,7 @@
 					evt.target.disabled = true;
 					evt.target.innerHTML = 'Decrypting...';
 					if (typeof(Worker) !== 'undefined'){
-						if (typeof(de) == 'undefined'){
+						if (typeof(dw) == 'undefined'){
 							dw = new Worker('file-worker.js');
 							dw.postMessage({
 								type: 'decrypt',
