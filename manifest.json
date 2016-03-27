@@ -1,0 +1,21 @@
+{
+	"name": "E2EE",
+	"description": "Safe Email",
+	"version": "2.0",
+	"permissions": [
+		"activeTab",
+		"http://*/*",
+		"https://*/*"
+	],
+	"browser_action": {
+		"default_title": "E2EE",
+		"default_popup": "cryptojs.html"
+	},
+	"applications":{
+		"gecko": {
+			"id": "123@gmail.com",
+			"strict_min_version": "45.0.0"
+		}
+	},
+	"manifest_version": 2
+}

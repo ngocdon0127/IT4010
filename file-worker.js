@@ -1,5 +1,5 @@
-importScripts('http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js');
-importScripts('http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js');
+importScripts('crypto-js/build/rollups/aes.js');
+importScripts('crypto-js/build/components/enc-base64-min.js');
 
 onmessage = function (msg) {
 	if (msg.data.type == 'encrypt'){
