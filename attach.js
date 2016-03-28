@@ -89,7 +89,7 @@ function encryptFile (evt) {
 			ob('file-info').value = 'File has been encrypted.';
 			ob('btnDecryptFile').disabled = false;
 			tmpcipher = event.data.cipher;
-			var tmpbrowser = event.data.b;
+			var tmpbrowser = event.data.browser;
 			console.log(event.data);
 			ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";
 			ob('file-info').value += "\nSize after Encrypting: " + (tmpcipher.length / 1024 / 1024).toFixed(2) + " MiB.";
