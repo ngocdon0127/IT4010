@@ -89,9 +89,12 @@ function encryptFile (evt) {
 			ob('file-info').value = 'File has been encrypted.';
 			ob('btnDecryptFile').disabled = false;
 			tmpcipher = event.data.cipher;
+			var tmpbrowser = event.data.b;
+			console.log(event.data);
 			ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";
 			ob('file-info').value += "\nSize after Encrypting: " + (tmpcipher.length / 1024 / 1024).toFixed(2) + " MiB.";
 			ob('file-info').value += "\nTime Encrypt: " + (date2.getTime() - date1.getTime()) + " ms.";
+			ob('file-info').value += "\nBrowser: " + tmpbrowser + ".";
 			ew.terminate();
 			ew = undefined;
 		}
@@ -128,6 +131,8 @@ function decryptFile (evt) {
 			}
 			catch (e){
 				alert('Key không đúng');
+				evt.target.disabled = false;
+				evt.target.innerHTML = 'Decrypt File';
 			}
 			dw.terminate();
 			dw = undefined;
