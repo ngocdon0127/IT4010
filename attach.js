@@ -1,3 +1,8 @@
+// seperator file dataURL with this string. Need to be long and semantic enough.
+// Or, this can be some character which is not included in Base64 index table. 
+// Such as '?', '!', ....
+var strseperator = 'ngocdon';
+
 function ob(x){
 	return document.getElementById(x);
 }
@@ -87,11 +92,13 @@ function encryptFile (evt) {
 			ob('file-info').value = 'File has been encrypted.';
 			ob('btnDecryptFile').disabled = false;
 			tmpcipher = event.data.cipher;
-			var arrCipher = tmpcipher.split('ngocdon');
+			var arrCipher = tmpcipher.split(strseperator);
 			console.log(arrCipher.length);
 			ob('file-info').value = '';
+			var fCipher = '';
 			for (var i = 0; i < arrCipher.length; i++) {
 				f = arrCipher[i];
+				fCipher += f + strseperator;
 				oldSize = files[i].size;
 				var tmpbrowser = event.data.browser;
 				// console.log(f);
@@ -100,7 +107,10 @@ function encryptFile (evt) {
 				ob('file-info').value += "\nSize after Encrypting: " + (f.length / 1024 / 1024).toFixed(2) + " MiB.";
 				// ob('file-info').value += "\nTime Encrypt: " + (date2.getTime() - date1.getTime()) + " ms.";
 				ob('file-info').value += "\nBrowser: " + tmpbrowser + ".";
-			};
+			}
+			fCipher = fCipher.substring(0, fCipher.length - strseperator.length);
+			console.log(fCipher.substring(fCipher.length - 10));
+			saveAs(new Blob([fCipher], {Type: 'text/plain'}), 'attachments.encrypted');
 			ew.terminate();
 			ew = undefined;
 		}

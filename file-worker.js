@@ -1,6 +1,8 @@
 importScripts('crypto-js/build/rollups/aes.js');
 importScripts('crypto-js/build/components/enc-base64-min.js');
 
+var strseperator = 'ngocdon';
+
 onmessage = function (msg) {
 	if (msg.data.type == 'encrypt'){
 		var files = msg.data.files;
@@ -18,7 +20,7 @@ onmessage = function (msg) {
 		// 		reader.push(new FileReader());
 		// 		reader[i].onload = function (evt) {
 		// 			if (i < files.length - 1){
-		// 				// encrypted += CryptoJS.AES.encrypt(evt.target.result, msg.data.key).toString() + 'ngocdon';
+		// 				// encrypted += CryptoJS.AES.encrypt(evt.target.result, msg.data.key).toString() + strseperator;
 						
 		// 			}
 		// 			else{
@@ -43,8 +45,8 @@ onmessage = function (msg) {
 				var reader = new FileReaderSync();
 				var dataURL = reader.readAsDataURL(file);
 				if (i < files.length - 1){
-					// encrypted += i + 'ngocdon';
-					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString() + 'ngocdon';
+					// encrypted += i + strseperator;
+					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString() + strseperator;
 				}
 				else{
 					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString();
@@ -60,7 +62,7 @@ onmessage = function (msg) {
 	else if (msg.data.type = 'decrypt'){
 		var ciphers = msg.data.ciphers;
 		var key = msg.data.key;
-		var arrCipher = ciphers.split('ngocdon');
+		var arrCipher = ciphers.split(strseperator);
 		var dataURL = [];
 		for (var i = 0; i < arrCipher.length; i++) {
 			cipher = arrCipher[i];
