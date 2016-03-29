@@ -12,8 +12,9 @@
 	<script language="JavaScript" type="text/javascript" src="cryptico/rsa.js"></script>
 	<script language="JavaScript" type="text/javascript" src="cryptico/aes.js"></script>
 	<script language="JavaScript" type="text/javascript" src="cryptico/api.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js">/* r224/r298 don't work! */</script>
-	<script src="http://cdn.rawgit.com/eligrey/FileSaver.js/master/FileSaver.js">/* note cannot run in web worker */</script>
+	<script language="JavaScript" type="text/javascript" src="crypto-js/build/rollups/md5.js"></script>
+	<script language="JavaScript" type="text/javascript" src="crypto-js/build/components/enc-base64-min.js"></script>
+	<script src="FileSaver.js">/* note cannot run in web worker */</script>
 	<script>
 
 		// self-invoking function
@@ -94,46 +95,34 @@
 			return rsa;
 		}
 
+		
 		function ob (x) {
 			return document.getElementById(x);
 		}
-		// var passPhrase = "ngocdon127@gmail.com Don Nguyen Ngoc";
-		// var len = 1024;
-		// var RSAKey = cryptico.generateRSAKey(passPhrase, len);
-		// // alert(sha256.hex(passPhrase));
-		// // alert(Math.seedrandom(sha256.hex(passPhrase)));
-		// // alert(cryptico.publicKeyString(RSAKey));
-		// // // alert(RSAKey.publicKeyBytes());
-		// // alert(RSAKey);
-		// console.log(RSAKey);
-		// // alert(cryptico.privateKeyString(RSAKey));
-		// alert(cryptico.publicKeyString(RSAKey));
-		// var text = "abcdefghijklmnopqrstuvwxyz0abcdefghijklmnopqrstuvwx1abcdefghijklmnopqrstuvwxyz2abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz4abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz6abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz8abcdefghijklmnopqrstuvwxyz9abcdefghijklmnopqrstuvwxyz0abcdefghijklmnopqrstuvwx1abcdefghijklmnopqrstuvwxyz2abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz4abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz6abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz8abcdefghijklmnopqrstuvwxyz9abcdefghijklmnopqrstuvwxyz0abcdefghijklmnopqrstuvwx1abcdefghijklmnopqrstuvwxyz2abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz4abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz6abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz8abcdefghijklmnopqrstuvwxyz9abcdefghijklmnopqrstuvwxyz0abcdefghijklmnopqrstuvwx1abcdefghijklmnopqrstuvwxyz2abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz4abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz6abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz8abcdefghijklmnopqrstuvwxyz9abcdefghijklmnopqrstuvwxyz0abcdefghijklmnopqrstuvwx1abcdefghijklmnopqrstuvwxyz2abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz4abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz6abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz8abcdefghijklmnopqrstuvwxyz9";
-		// var cipher = cryptico.encrypt(text, cryptico.publicKeyString(RSAKey), RSAKey);
-		// console.log(cipher);
-		// var plainText = cryptico.decrypt(cipher.cipher, RSAKey);
-		// console.log(plainText);
-		// var cipher1 = cryptico.encrypt(text, cryptico.publicKeyString(RSAKey), RSAKey);
-		// // console.log(cipher1);
-		// console.log(cryptico.decrypt(cipher1.cipher, cryptico.privateKeyFromString(cryptico.privateKeyString(RSAKey))).plaintext);
-		// console.log(cryptico.privateKeyString(RSAKey));
-		// // console.log("\n");
-		// // console.log(JSON.stringify(RSAKey));
-		// console.log(cryptico.privateKeyFromString(cryptico.privateKeyString(RSAKey)));
+
 		function generateRSAKey () {
-			// Passphrase
-			// var passphrase = ob('passphrase').value;
-			// var bitlen = ob('bitlen').value;
+
+			// Passphrase is used to seed random in cryptico library by this statement:
 			// Math.seedrandom(sha256.hex(passphrase));
 
-			// Random no.
-			var bitlen = ob('bitlen').value;
+			// generate a unique number
 			var passphrase = (new Date()).getTime();
+
+			// convert passphrase to string
+			passphrase += '';
+			
+			// encrypt passphrase using MD5
+			passphrase = CryptoJS.MD5(passphrase).toString(CryptoJS.enc.Base16);
 			console.log(passphrase);
-			passphrase += 'x';
+
+			// bit length in RSA Key
+			var bitlen = ob('bitlen').value;
+
 			var RSAKey = cryptico.generateRSAKey(passphrase, bitlen);
 			ob('pub').value = cryptico.publicKeyString(RSAKey);
 			ob('priv').value = cryptico.privateKeyString(RSAKey);
+
+			// Log Key
 			console.log(RSAKey);
 			for (var i = 0; i < parametersBigint.length; i++) {
 				parameter = parametersBigint[i];

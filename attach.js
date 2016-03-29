@@ -81,7 +81,7 @@ function encryptFile (evt) {
 			});
 		}
 		ew.onmessage = function (event) {
-			var date2 = new Date();
+			// var date2 = new Date();
 			evt.target.disabled = false;
 			evt.target.innerHTML = 'Encrypt File';
 			ob('file-info').value = 'File has been encrypted.';
@@ -94,7 +94,7 @@ function encryptFile (evt) {
 				f = arrCipher[i];
 				oldSize = files[i].size;
 				var tmpbrowser = event.data.browser;
-				console.log(f);
+				// console.log(f);
 				ob('file-info').value += "\n\nName: " + files[i].name + ".";
 				ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";
 				ob('file-info').value += "\nSize after Encrypting: " + (f.length / 1024 / 1024).toFixed(2) + " MiB.";
