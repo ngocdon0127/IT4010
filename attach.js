@@ -64,13 +64,11 @@ function decryptFileSync () {
 var ew = undefined;
 var dw = undefined;
 var oldSize = 0;
+var files;
 
 function encryptFile (evt) {
 	var date1 = new Date();
-	var files = ob('attach').files;
-	file = files[0];
-	tmpFileName = file.name;
-	oldSize = file.size;
+	files = ob('attach').files;
 	evt.target.disabled = true;
 	evt.target.innerHTML = 'Encrypting...';
 	if (typeof(Worker) !== 'undefined'){
@@ -78,7 +76,7 @@ function encryptFile (evt) {
 			ew = new Worker('file-worker.js');
 			ew.postMessage({
 				type: 'encrypt',
-				file: file,
+				files: files,
 				key: ob('key').value
 			});
 		}
@@ -89,12 +87,20 @@ function encryptFile (evt) {
 			ob('file-info').value = 'File has been encrypted.';
 			ob('btnDecryptFile').disabled = false;
 			tmpcipher = event.data.cipher;
-			var tmpbrowser = event.data.browser;
-			console.log(event.data);
-			ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";
-			ob('file-info').value += "\nSize after Encrypting: " + (tmpcipher.length / 1024 / 1024).toFixed(2) + " MiB.";
-			ob('file-info').value += "\nTime Encrypt: " + (date2.getTime() - date1.getTime()) + " ms.";
-			ob('file-info').value += "\nBrowser: " + tmpbrowser + ".";
+			var arrCipher = tmpcipher.split('ngocdon');
+			console.log(arrCipher.length);
+			ob('file-info').value = '';
+			for (var i = 0; i < arrCipher.length; i++) {
+				f = arrCipher[i];
+				oldSize = files[i].size;
+				var tmpbrowser = event.data.browser;
+				console.log(f);
+				ob('file-info').value += "\n\nName: " + files[i].name + ".";
+				ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";
+				ob('file-info').value += "\nSize after Encrypting: " + (f.length / 1024 / 1024).toFixed(2) + " MiB.";
+				// ob('file-info').value += "\nTime Encrypt: " + (date2.getTime() - date1.getTime()) + " ms.";
+				ob('file-info').value += "\nBrowser: " + tmpbrowser + ".";
+			};
 			ew.terminate();
 			ew = undefined;
 		}
@@ -116,24 +122,28 @@ function decryptFile (evt) {
 			dw = new Worker('file-worker.js');
 			dw.postMessage({
 				type: 'decrypt',
-				cipher: cipher,
+				ciphers: cipher,
 				key: ob('key').value
 			});
 		}
 		dw.onmessage = function (event) {
 			var blob = undefined;
-			try{
-				blob = dataURLToBlob(event.data.dataURL);
-				// console.log(evt.target);
-				evt.target.disabled = false;
-				evt.target.innerHTML = 'Decrypt File';
-				saveAs(blob, fileName);
-			}
-			catch (e){
-				alert('Key không đúng');
-				evt.target.disabled = false;
-				evt.target.innerHTML = 'Decrypt File';
-			}
+			var dataURL = event.data.dataURL;
+			for (var i = 0; i < dataURL.length; i++) {
+				data = dataURL[i];
+				try{
+					blob = dataURLToBlob(data);
+					// console.log(evt.target);
+					evt.target.disabled = false;
+					evt.target.innerHTML = 'Decrypt File';
+					saveAs(blob, files[i].name);
+				}
+				catch (e){
+					alert('Key không đúng');
+					evt.target.disabled = false;
+					evt.target.innerHTML = 'Decrypt File';
+				}
+			};
 			dw.terminate();
 			dw = undefined;
 		}
