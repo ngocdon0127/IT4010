@@ -8,6 +8,7 @@ onmessage = function (msg) {
 		var files = msg.data.files;
 		var encrypted = '';
 		var noOfEncryptedFiles = 0;
+		var filenames = '';
 
 		// FireFox does not support FileReader in Web Worker.
 		// Btw, Encrypting multiple files using Async is too complicated. => use FileReaderSync.
@@ -47,21 +48,32 @@ onmessage = function (msg) {
 				if (i < files.length - 1){
 					// encrypted += i + strseperator;
 					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString() + strseperator;
+					filenames += file.name + strseperator;
 				}
 				else{
 					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString();
+					filenames += file.name;
 				}
 				// noOfEncryptedFiles++;
 			}
+			var data = filenames + '?' + encrypted;
 			postMessage({
 				cipher: encrypted,
+				filenames: filenames,
+				data: data,
 				browser: 'Sync'
 			});
 		// }
 	}
 	else if (msg.data.type = 'decrypt'){
-		var ciphers = msg.data.ciphers;
+		// var ciphers = msg.data.ciphers;
+		// var filenames = msg.data.filenames;
 		var key = msg.data.key;
+		var file = msg.data.file;
+		var reader = new FileReaderSync();
+		var data = reader.readAsText(file);
+		var ciphers = data.split('?')[1];
+		var filenames = data.split('?')[0];
 		var arrCipher = ciphers.split(strseperator);
 		var dataURL = [];
 		for (var i = 0; i < arrCipher.length; i++) {
@@ -71,7 +83,8 @@ onmessage = function (msg) {
 			
 		}
 		postMessage({
-			dataURL: dataURL
+			dataURL: dataURL,
+			filenames: filenames
 		});
 	}
 }

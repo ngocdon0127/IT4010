@@ -26,7 +26,7 @@ function handleFileSelect (event) {
 
 }
 ob('attach').addEventListener('change', handleFileSelect, false);
-ob('btnDecryptFile').disabled = true;
+
 
 var tmpcipher = '';
 var tmpFileName = '';
@@ -70,6 +70,7 @@ var ew = undefined;
 var dw = undefined;
 var oldSize = 0;
 var files;
+var filenames;
 
 function encryptFile (evt) {
 	var date1 = new Date();
@@ -92,6 +93,10 @@ function encryptFile (evt) {
 			ob('file-info').value = 'File has been encrypted.';
 			ob('btnDecryptFile').disabled = false;
 			tmpcipher = event.data.cipher;
+			filenames = event.data.filenames;
+			var data = event.data.data.split('?');
+			filenames = data[0];
+			tmpcipher = data[1];
 			var arrCipher = tmpcipher.split(strseperator);
 			console.log(arrCipher.length);
 			ob('file-info').value = '';
@@ -110,7 +115,8 @@ function encryptFile (evt) {
 			}
 			fCipher = fCipher.substring(0, fCipher.length - strseperator.length);
 			console.log(fCipher.substring(fCipher.length - 10));
-			saveAs(new Blob([fCipher], {Type: 'text/plain'}), 'attachments.encrypted');
+			// saveAs(new Blob([fCipher], {Type: 'text/plain'}), 'attachments.encrypted');
+			saveAs(new Blob([event.data.data], {Type: 'text/plain'}), 'attachments.encrypted');
 			ew.terminate();
 			ew = undefined;
 		}
@@ -123,8 +129,10 @@ function encryptFile (evt) {
 ob('btnEncryptFile').addEventListener('click', encryptFile);
 
 function decryptFile (evt) {
-	var cipher = tmpcipher;
-	var fileName = tmpFileName;
+	if (ob('attach').files[0].name.indexOf('.encrypted') < 0){
+		alert('Chọn file .encrypted để giải mã.');
+		return;
+	}
 	evt.target.disabled = true;
 	evt.target.innerHTML = 'Decrypting...';
 	if (typeof(Worker) !== 'undefined'){
@@ -132,21 +140,25 @@ function decryptFile (evt) {
 			dw = new Worker('file-worker.js');
 			dw.postMessage({
 				type: 'decrypt',
-				ciphers: cipher,
+				file: ob('attach').files[0],
 				key: ob('key').value
 			});
 		}
 		dw.onmessage = function (event) {
 			var blob = undefined;
+			console.log(event.data);
 			var dataURL = event.data.dataURL;
+			var filenames = event.data.filenames.split(strseperator);
+			console.log(filenames);
 			for (var i = 0; i < dataURL.length; i++) {
-				data = dataURL[i];
+				var data = dataURL[i];
+				var filename = filenames[i];
 				try{
 					blob = dataURLToBlob(data);
 					// console.log(evt.target);
 					evt.target.disabled = false;
 					evt.target.innerHTML = 'Decrypt File';
-					saveAs(blob, files[i].name);
+					saveAs(blob, filename);
 				}
 				catch (e){
 					alert('Key không đúng');
@@ -186,3 +198,5 @@ var dataURLToBlob = function(dataURL) {
 }
 
 ob('btnDecryptFile').addEventListener('click', decryptFile);
+ob('btnEncrypt').addEventListener('click', encrypt)
+ob('btnDecrypt').addEventListener('click', decrypt)

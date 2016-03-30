@@ -17,5 +17,15 @@
 			"strict_min_version": "45.0.0"
 		}
 	},
-	"manifest_version": 2
+	"manifest_version": 2,
+	"content_scripts": [
+		{
+			"matches": ["http://*/*", "https://*/*"],
+			"js": ["content-scripts.js"],
+			"css": ["content-css.css"]
+		}
+	],
+	"background": {
+		"scripts": ["background.js"]
+	}
 }
