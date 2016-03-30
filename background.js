@@ -1,9 +1,10 @@
+// id of Gmail tab.
 var sourceTabId = '';
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.actionType == 'open-encrypt-frame')
 	chrome.windows.create({
-		url: 'cryptojs.html'
+		url: 'generate-rsa-key.html'
 	});
 	chrome.extension.onConnect.addListener(function (port) {
 		port.postMessage({

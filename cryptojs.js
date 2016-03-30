@@ -9,6 +9,9 @@ port.onMessage.addListener(function (msg) {
 		$('#text').val(msg.emailContent);
 	}
 });
+port.postMessage({
+	encryptedData: $('#encrypted').val()
+});
 
 ob('btnTransfer').addEventListener('click', function () {
 	console.log('transfer');
