@@ -1,30 +1,5 @@
 'use strict';
-// connect to background page
-var port = chrome.extension.connect({name: "get-email-content"});
-port.onMessage.addListener(function (msg) {
-	if (msg.emailContent != null){
-		$('#text').val(msg.emailContent);
-	}
-});
-port.postMessage({
-	encryptedData: $('#encrypted').val()
-});
 
-ob('btnTransfer').addEventListener('click', function () {
-	console.log('transfer');
-	console.log($('#encrypted').val());
-	var port = chrome.extension.connect({name: 'transfer-encrypted-data'});
-	port.postMessage({
-		encryptedData: $('#encrypted').val()
-	});
-	window.close();
-});
-
-function encrypt () {
-	var text = ob('text').value;
-	var encrypted = 'hehe';
-	ob('encrypted').value = encrypted.toString();
-}
 function handleFileSelect (event) {
 	var files = event.target.files;
 	for (var i = 0; i < files.length; i++) {
@@ -134,8 +109,6 @@ function encryptFile (evt) {
 	}
 }
 
-ob('btnEncryptFile').addEventListener('click', encryptFile);
-
 function decryptFile (evt) {
 	if (ob('attach').files[0].name.indexOf('.encrypted') < 0){
 		alert('Chọn file .encrypted để giải mã.');
@@ -180,75 +153,52 @@ function decryptFile (evt) {
 	}
 }
 
-// dataURLToBlob => get from https://github.com/ebidel/filer.js/blob/master/src/filer.js#L137
-var dataURLToBlob = function(dataURL) {
-	var BASE64_MARKER = ';base64,';
-	if (dataURL.indexOf(BASE64_MARKER) == -1) {
-		var parts = dataURL.split(',');
-		var contentType = parts[0].split(':')[1];
-		var raw = decodeURIComponent(parts[1]);
-
-		return new Blob([raw], {type: contentType});
-	}
-
-	var parts = dataURL.split(BASE64_MARKER);
-	var contentType = parts[0].split(':')[1];
-	var raw = window.atob(parts[1]);
-	var rawLength = raw.length;
-
-	var uInt8Array = new Uint8Array(rawLength);
-
-	for (var i = 0; i < rawLength; ++i) {
-	  uInt8Array[i] = raw.charCodeAt(i);
-	}
-
-	return new Blob([uInt8Array], {type: contentType});
-}
-
 ob('btnDecryptFile').addEventListener('click', decryptFile);
-ob('btnEncrypt').addEventListener('click', encryptEmail);
-ob('btnOptions').addEventListener('click', function () {
-	chrome.tabs.create({url: 'generate-rsa-key.html'}, function (tab) {
-	});
+
+// connect to background page
+var port = chrome.extension.connect({name: "Retrieve decrypted email"});
+port.onMessage.addListener(function(msg) {
+	// if user use context menu
+	if (msg.contextMenu == true){
+		var c = msg.contextMenu;
+		var d = msg.data;
+		$('#text').text(d);
+		$('#text').val(d);
+		decryptEmail(c, d);
+	}
 });
 
-// insert data to select element
-(function () {
-	STORAGE_AREA.get('indexes', function (items) {
-		var indexes = items.indexes;
-		if (typeof(indexes) !== 'undefined'){
-			indexes.forEach(function (it) {
-				STORAGE_AREA.get(it, function (key) {
-					key = key[it];
-					if (typeof(key) !== 'undefined'){
-						var opt = document.createElement('option');
-						var data = preDecrypt(key.public).split('|');
-						opt.value = data[1];
-						opt.innerHTML = data[1];
-						ob('slRecipient').appendChild(opt);
-					}
-				})
-			})
-		}
-	})
-})();
+function decryptEmail(contextMenu, data) {
+	console.log('decrypt');
 
-function encryptEmail () {
-	var plainText = ob('text').value;
-	var recipient = ob('slRecipient').value;
-	STORAGE_AREA.get(recipient, function (items) {
-		var key = items[recipient];
-		if (typeof(key) !== 'undefined'){
-			var data = preDecrypt(key.public);
-			data = data.split('|');
-			if (data[1] != recipient){
-				alert('Email is not matched.');
-				return;
-			}
-			var publicKey = data[0];
-			var cipher = cryptico.encrypt(unescape(encodeURIComponent(plainText)), publicKey);
-			ob('encrypted').value = preEncrypt(cipher.cipher + '|' + recipient);
+	data = preDecrypt(data);
+	console.log(data);
+	data = data.split('|');
+	console.log(data);
+	if (data.length < 2){
+		alert('Data is corrupted.');
+		console.log('Data is corrupted.');
+		return;
+	}
+	STORAGE_AREA.get(data[1], function (items) {
+		if (jQuery.isEmptyObject(items)){
+			alert('Could not find private key of ' + data[1]);
+			return;
+		}
+		try {
+			var privateKey = items[data[1]].private;
+			var passphrase = prompt('Nhập passphrase:', '');
+			privateKey = CryptoJS.AES.decrypt(privateKey, passphrase).toString(CryptoJS.enc.Utf8);
+			privateKey = preDecrypt(privateKey);
+			var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));
+			$('#decrypted').val(decodeURIComponent(escape(plainText.plaintext)));
+		}
+		catch (e){
+			alert('Email is corrupted or invalid passphrase.');
 		}
 	})
 }
 
+ob('btnDecrypt').addEventListener('click', function () {
+	decryptEmail(true, ob('text').value);
+})

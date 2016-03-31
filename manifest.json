@@ -6,7 +6,8 @@
 		"activeTab",
 		"http://*/*",
 		"https://*/*",
-		"storage"
+		"storage",
+		"contextMenus"
 	],
 	"browser_action": {
 		"default_title": "E2EE",

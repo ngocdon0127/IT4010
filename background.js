@@ -43,4 +43,24 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			});
 		});
 	}
-})
+});
+
+// add context menu
+chrome.contextMenus.create({
+	title: "Decrypt this message.",
+	contexts: ["selection"],
+	onclick: clickHandler
+});
+
+// Context Menu click hander
+function clickHandler (data, tab) {
+	chrome.windows.create({
+		url: "decrypt-email.html"
+		// type: "panel"
+	});
+	var b = true; // detect if user use context menu
+	chrome.extension.onConnect.addListener(function(port) {
+		port.postMessage({contextMenu: b, data: data.selectionText});
+		b = false;
+	});
+}
