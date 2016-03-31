@@ -1,17 +1,29 @@
+'use strict';
+// connect to background page
+var port = chrome.extension.connect({name: "get-email-content"});
+port.onMessage.addListener(function (msg) {
+	if (msg.emailContent != null){
+		$('#text').val(msg.emailContent);
+	}
+});
+port.postMessage({
+	encryptedData: $('#encrypted').val()
+});
 
-function ob(x){
-	return document.getElementById(x);
-}
+ob('btnTransfer').addEventListener('click', function () {
+	console.log('transfer');
+	console.log($('#encrypted').val());
+	var port = chrome.extension.connect({name: 'transfer-encrypted-data'});
+	port.postMessage({
+		encryptedData: $('#encrypted').val()
+	});
+	window.close();
+});
+
 function encrypt () {
 	var text = ob('text').value;
-	var key = ob('key').value;
-	var encrypted = CryptoJS.AES.encrypt(text, key);
+	var encrypted = 'hehe';
 	ob('encrypted').value = encrypted.toString();
-}
-function decrypt() {
-	var encrypted = ob('encrypted').value;
-	var decrypted = CryptoJS.AES.decrypt(encrypted, ob('key').value);
-	ob('decrypted').value = decrypted.toString(CryptoJS.enc.Utf8);
 }
 function handleFileSelect (event) {
 	var files = event.target.files;
@@ -195,7 +207,6 @@ var dataURLToBlob = function(dataURL) {
 
 ob('btnDecryptFile').addEventListener('click', decryptFile);
 ob('btnEncrypt').addEventListener('click', encrypt);
-ob('btnDecrypt').addEventListener('click', decrypt);
 ob('btnOptions').addEventListener('click', function () {
 	chrome.tabs.create({url: 'generate-rsa-key.html'}, function (tab) {
 	});

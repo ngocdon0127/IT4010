@@ -1,7 +1,6 @@
+importScripts('consts-and-funcs.js');
 importScripts('crypto-js/build/rollups/aes.js');
 importScripts('crypto-js/build/components/enc-base64-min.js');
-
-var strseperator = 'ngocdon';
 
 onmessage = function (msg) {
 	if (msg.data.type == 'encrypt'){
@@ -21,7 +20,7 @@ onmessage = function (msg) {
 		// 		reader.push(new FileReader());
 		// 		reader[i].onload = function (evt) {
 		// 			if (i < files.length - 1){
-		// 				// encrypted += CryptoJS.AES.encrypt(evt.target.result, msg.data.key).toString() + strseperator;
+		// 				// encrypted += CryptoJS.AES.encrypt(evt.target.result, msg.data.key).toString() + STR_SEPERATOR;
 						
 		// 			}
 		// 			else{
@@ -46,9 +45,9 @@ onmessage = function (msg) {
 				var reader = new FileReaderSync();
 				var dataURL = reader.readAsDataURL(file);
 				if (i < files.length - 1){
-					// encrypted += i + strseperator;
-					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString() + strseperator;
-					filenames += file.name + strseperator;
+					// encrypted += i + STR_SEPERATOR;
+					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString() + STR_SEPERATOR;
+					filenames += file.name + STR_SEPERATOR;
 				}
 				else{
 					encrypted += CryptoJS.AES.encrypt(dataURL, msg.data.key).toString();
@@ -74,7 +73,7 @@ onmessage = function (msg) {
 		var data = reader.readAsText(file);
 		var ciphers = data.split('?')[1];
 		var filenames = data.split('?')[0];
-		var arrCipher = ciphers.split(strseperator);
+		var arrCipher = ciphers.split(STR_SEPERATOR);
 		var dataURL = [];
 		for (var i = 0; i < arrCipher.length; i++) {
 			cipher = arrCipher[i];

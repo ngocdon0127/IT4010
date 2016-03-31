@@ -61,7 +61,7 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 			ob[email] = {
 				isPairKey: 0,
 				public: p,
-				private: '	'
+				private: ''
 			}
 			STORAGE_AREA.set(ob, function () {
 				addIndexes(email);
