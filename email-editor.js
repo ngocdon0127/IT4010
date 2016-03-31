@@ -206,8 +206,48 @@ var dataURLToBlob = function(dataURL) {
 }
 
 ob('btnDecryptFile').addEventListener('click', decryptFile);
-ob('btnEncrypt').addEventListener('click', encrypt);
+ob('btnEncrypt').addEventListener('click', encryptEmail);
 ob('btnOptions').addEventListener('click', function () {
 	chrome.tabs.create({url: 'generate-rsa-key.html'}, function (tab) {
 	});
-})
+});
+
+// insert data to select element
+(function () {
+	STORAGE_AREA.get('indexes', function (items) {
+		var indexes = items.indexes;
+		if (typeof(indexes) !== 'undefined'){
+			indexes.forEach(function (it) {
+				STORAGE_AREA.get(it, function (key) {
+					key = key[it];
+					if (typeof(key) !== 'undefined'){
+						var opt = document.createElement('option');
+						var data = preDecrypt(key.public).split('|');
+						opt.value = data[1];
+						opt.innerHTML = data[1];
+						ob('slRecipient').appendChild(opt);
+					}
+				})
+			})
+		}
+	})
+})()
+
+function encryptEmail () {
+	var plainText = ob('text').value;
+	var recipient = ob('slRecipient').value;
+	STORAGE_AREA.get(recipient, function (items) {
+		var key = items[recipient];
+		if (typeof(key) !== 'undefined'){
+			var data = preDecrypt(key.public);
+			data = data.split('|');
+			if (data[1] != recipient){
+				alert('Email is not matched.');
+				return;
+			}
+			var publicKey = data[0];
+			var cipher = cryptico.encrypt(unescape(encodeURIComponent(plainText)), publicKey);
+			ob('encrypted').value = cipher.cipher;
+		}
+	})
+}
