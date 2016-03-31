@@ -83,9 +83,13 @@ cryptico.privateKeyString = function (rsakey) {
 	var privKey = '';
 	for (var i = 0; i < parametersBigint.length; i++) {
 		parameter = parametersBigint[i];
+
+		// seperate parameter parts with '|'
 		privKey += cryptico.b16to64(rsakey[parameter].toString(16)) + '|';
 	}
-	return privKey;
+
+	// remove the last '|' character before returning private key.
+	return privKey.substring(0, privKey.length - 1);
 }
 
 cryptico.RSAKeyFromString = function(string) {
@@ -129,8 +133,9 @@ function generateRSAKey () {
 	var bitlen = ob('bitlen').value;
 
 	var RSAKey = cryptico.generateRSAKey(email, bitlen);
-	ob('pub').value = cryptico.publicKeyString(RSAKey);
-	ob('priv').value = cryptico.privateKeyString(RSAKey);
+	console.log(LOCAL_KEY);
+	ob('pub').value = preEncrypt(cryptico.publicKeyString(RSAKey) + '|' + ob('email').value);
+	ob('priv').value = preEncrypt(cryptico.privateKeyString(RSAKey) + '|' + ob('email').value);
 
 	// Log Key
 	console.log(RSAKey);
@@ -180,7 +185,8 @@ function saveRSAKey () {
 		}
 		var data = {};
 		data[email] = {
-			key: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
+			public: ob('pub').value,
+			private: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
 			isPairKey: 1
 		}
 		chrome.storage.sync.set(data, function () {
@@ -189,21 +195,7 @@ function saveRSAKey () {
 			}
 			else{
 				console.log('ok');
-				chrome.storage.sync.get('indexes', function (items) {
-					var indexes = [];
-					if (jQuery.isEmptyObject(items)){
-						indexes = [email];
-					}
-					else{
-						items.indexes.push(email);
-						indexes = items.indexes;
-					}
-					chrome.storage.sync.set({
-						indexes: indexes
-					}, function () {
-						
-					});
-				});
+				addIndexes(email);
 			}
 		});
 	});
