@@ -4,7 +4,7 @@ function ob (x) {
 
 ob('btnGenerateRSAKey').addEventListener('click', generateRSAKey);
 
-// self-invoking function
+		// self-invoking function
 		/*(function(c){
 			var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
 			// var parametersBigint = ["n", "d"];
@@ -89,23 +89,24 @@ ob('btnGenerateRSAKey').addEventListener('click', generateRSAKey);
 
 		function generateRSAKey () {
 
-			// Passphrase is used to seed random in cryptico library by this statement:
-			// Math.seedrandom(sha256.hex(passphrase));
+			// Email is used to seed random in cryptico library by this statement:
+			// Math.seedrandom(sha256.hex(email));
+			var email = ob('email').value;
 
 			// generate a unique number
-			var passphrase = (new Date()).getTime();
+			var date = (new Date()).getTime();
 
-			// convert passphrase to string
-			passphrase += '';
+			// convert email to string
+			email += ' ' + date;
 			
-			// encrypt passphrase using MD5
-			passphrase = CryptoJS.MD5(passphrase).toString(CryptoJS.enc.Base16);
-			console.log(passphrase);
+			// encrypt email using MD5
+			email = CryptoJS.MD5(email).toString(CryptoJS.enc.Base16);
+			console.log(email);
 
 			// bit length in RSA Key
 			var bitlen = ob('bitlen').value;
 
-			var RSAKey = cryptico.generateRSAKey(passphrase, bitlen);
+			var RSAKey = cryptico.generateRSAKey(email, bitlen);
 			ob('pub').value = cryptico.publicKeyString(RSAKey);
 			ob('priv').value = cryptico.privateKeyString(RSAKey);
 

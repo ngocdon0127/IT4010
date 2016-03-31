@@ -5,7 +5,8 @@
 	"permissions": [
 		"activeTab",
 		"http://*/*",
-		"https://*/*"
+		"https://*/*",
+		"storage"
 	],
 	"browser_action": {
 		"default_title": "E2EE",

@@ -198,5 +198,9 @@ var dataURLToBlob = function(dataURL) {
 }
 
 ob('btnDecryptFile').addEventListener('click', decryptFile);
-ob('btnEncrypt').addEventListener('click', encrypt)
-ob('btnDecrypt').addEventListener('click', decrypt)
+ob('btnEncrypt').addEventListener('click', encrypt);
+ob('btnDecrypt').addEventListener('click', decrypt);
+ob('btnOptions').addEventListener('click', function () {
+	chrome.tabs.create({url: 'generate-rsa-key.html'}, function (tab) {
+	});
+})
