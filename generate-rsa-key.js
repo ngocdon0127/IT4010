@@ -179,7 +179,10 @@ function saveRSAKey () {
 			return;
 		}
 		var data = {};
-		data[email] = CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString()
+		data[email] = {
+			key: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
+			isPairKey: 1
+		}
 		chrome.storage.sync.set(data, function () {
 			if (typeof(chrome.runtime.lastError) !== 'undefined'){
 				console.log('error');
