@@ -177,15 +177,52 @@ ob('btnOptions').addEventListener('click', function () {
 	})
 })();
 
+// Number of recipients
+var noOfRecipients = 0;
+
+// Number of encrypted email for recipients
+var encryptedEmail = 0;
+
 function encryptEmail () {
 	console.log('start func');
 	aesKeyFile = (new Date()).getTime() + ' ';
 	aesKeyFile = CryptoJS.MD5(aesKeyFile).toString(CryptoJS.enc.Base16);
 	console.log(aesKeyFile);
 	var plainText = ob('text').value + '|' + aesKeyFile;
-	var recipient = ob('slRecipient').value;
-	console.log('in encryptEmail func: ');
-	console.log(chrome.storage.sync);
+	var sl = ob('slRecipient');
+	var flags = {
+		ef: 0
+	}
+
+	// Count number of recipients
+	for (var i = 0; i < sl.options.length; i++) {
+		var opt = sl.options[i];
+		if (opt.selected){
+			noOfRecipients++;
+		}
+	}
+
+	// Encrypt email for recipients.
+	for (var i = 0; i < sl.options.length; i++) {
+		var opt = sl.options[i];
+		if (opt.selected){
+			var recipient = opt.value;
+			log('start encrypting email for ' + opt.value);
+			ee(recipient, plainText, flags);
+		}
+	}
+	var interval = setInterval(function () {
+		log(encryptedEmail + ' / ' + noOfRecipients + ' done.');
+		if (encryptedEmail >= noOfRecipients){
+			var encryptedEmailContent = ob('encrypted').value;
+			ob('encrypted').value = encryptedEmailContent.substring(0, encryptedEmailContent.length - STR_SEPERATOR.length);
+			clearInterval(interval);
+			log('done');
+		}
+	}, 1);
+}
+
+function ee (recipient, plainText, obj) {
 	chrome.storage.sync.get(recipient, function (items) {
 		var key = items[recipient];
 		if (typeof(key) !== 'undefined'){
@@ -197,8 +234,12 @@ function encryptEmail () {
 			}
 			var publicKey = data[0];
 			var cipher = cryptico.encrypt(unescape(encodeURIComponent(plainText)), publicKey);
-			ob('encrypted').value = preEncrypt(cipher.cipher + '|' + recipient);
-			encryptFile();
+			ob('encrypted').value += preEncrypt(cipher.cipher + '|' + recipient) + STR_SEPERATOR;
+			encryptedEmail++;
+			if (obj.ef == 0){
+				encryptFile();
+				obj.ef = 1;
+			}
 		}
 	})
 }
