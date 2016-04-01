@@ -1,6 +1,11 @@
-importScripts('consts-and-funcs.js');
+// importScripts('consts-and-funcs.js');
 importScripts('crypto-js/build/rollups/aes.js');
 importScripts('crypto-js/build/components/enc-base64-min.js');
+
+// seperator file dataURL with this string. Need to be long and semantic enough.
+// Or, this can be some character which is not included in Base64 index table. 
+// Such as '?', '!', ....
+var STR_SEPERATOR = 'ngocdon';
 
 onmessage = function (msg) {
 	if (msg.data.type == 'encrypt'){

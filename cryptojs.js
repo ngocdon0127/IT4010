@@ -1,7 +1,3 @@
-function ob (x) {
-	return document.getElementById(x);
-}
-
 // connect to background page
 var port = chrome.extension.connect({name: "get-email-content"});
 port.onMessage.addListener(function (msg) {

@@ -1,4 +1,6 @@
-'use strict';
+// use this key to encrypt attachments.
+var aesKeyFile = ''
+
 // connect to background page
 var port = chrome.extension.connect({name: "get-email-content"});
 port.onMessage.addListener(function (msg) {
@@ -39,39 +41,6 @@ ob('attach').addEventListener('change', handleFileSelect, false);
 var tmpcipher = '';
 var tmpFileName = '';
 
-// Sync Functions
-
-function encryptFileSync () {
-	var files = ob('attach').files;
-	file = files[0];
-	console.log('read File: ');
-	console.log(file);
-	tmpFileName = file.name;
-	var reader = new FileReader();
-	reader.onload = function (evt){
-		// if (evt.target.readyState == FileReader.DONE){
-		var encrypted = CryptoJS.AES.encrypt(evt.target.result, ob('key').value);
-		a.attr('href', 'data:application/octet-stream,' + encrypted);
-		a.attr('download', file.name + '.encrypted');
-		// saveAs(new Blob([encrypted], {Type: 'application/octet-stream'}), file.name + '.encrypted');
-		// ob('file-info').value = encrypted;
-		tmpcipher = encrypted;
-		console.log('encrypted');
-
-	}
-	// var blob = file.slice(0, file.size);
-	reader.readAsDataURL(file);
-}
-
-function decryptFileSync () {
-	var cipher = tmpcipher;
-	var fileName = tmpFileName;
-	var decrypted = CryptoJS.AES.decrypt(cipher, ob('key').value).toString(CryptoJS.enc.Latin1);
-	console.log('start saving');
-	saveAs(dataURLToBlob(decrypted), fileName);
-	console.log('finish saving');
-}
-
 // Async Functions => Good
 
 var ew = undefined;
@@ -83,21 +52,21 @@ var filenames;
 function encryptFile (evt) {
 	var date1 = new Date();
 	files = ob('attach').files;
-	evt.target.disabled = true;
-	evt.target.innerHTML = 'Encrypting...';
+	ob('btnEncrypt').disabled = true;
+	ob('btnEncrypt').innerHTML = 'Encrypting...';
 	if (typeof(Worker) !== 'undefined'){
 		if (typeof(ew) == 'undefined'){
 			ew = new Worker('file-worker.js');
 			ew.postMessage({
 				type: 'encrypt',
 				files: files,
-				key: ob('key').value
+				key: aesKeyFile
 			});
 		}
 		ew.onmessage = function (event) {
 			// var date2 = new Date();
-			evt.target.disabled = false;
-			evt.target.innerHTML = 'Encrypt File';
+			ob('btnEncrypt').disabled = false;
+			ob('btnEncrypt').innerHTML = 'Encrypt File';
 			ob('file-info').value = 'File has been encrypted.';
 			ob('btnDecryptFile').disabled = false;
 			tmpcipher = event.data.cipher;
@@ -149,7 +118,7 @@ function decryptFile (evt) {
 			dw.postMessage({
 				type: 'decrypt',
 				file: ob('attach').files[0],
-				key: ob('key').value
+				key: aesKeyFile
 			});
 		}
 		dw.onmessage = function (event) {
@@ -178,31 +147,6 @@ function decryptFile (evt) {
 			dw = undefined;
 		}
 	}
-}
-
-// dataURLToBlob => get from https://github.com/ebidel/filer.js/blob/master/src/filer.js#L137
-var dataURLToBlob = function(dataURL) {
-	var BASE64_MARKER = ';base64,';
-	if (dataURL.indexOf(BASE64_MARKER) == -1) {
-		var parts = dataURL.split(',');
-		var contentType = parts[0].split(':')[1];
-		var raw = decodeURIComponent(parts[1]);
-
-		return new Blob([raw], {type: contentType});
-	}
-
-	var parts = dataURL.split(BASE64_MARKER);
-	var contentType = parts[0].split(':')[1];
-	var raw = window.atob(parts[1]);
-	var rawLength = raw.length;
-
-	var uInt8Array = new Uint8Array(rawLength);
-
-	for (var i = 0; i < rawLength; ++i) {
-	  uInt8Array[i] = raw.charCodeAt(i);
-	}
-
-	return new Blob([uInt8Array], {type: contentType});
 }
 
 ob('btnDecryptFile').addEventListener('click', decryptFile);
@@ -234,9 +178,12 @@ ob('btnOptions').addEventListener('click', function () {
 })();
 
 function encryptEmail () {
+	console.log('start func');
 	var plainText = ob('text').value;
 	var recipient = ob('slRecipient').value;
-	STORAGE_AREA.get(recipient, function (items) {
+	console.log('in encryptEmail func: ');
+	console.log(chrome.storage.sync);
+	chrome.storage.sync.get(recipient, function (items) {
 		var key = items[recipient];
 		if (typeof(key) !== 'undefined'){
 			var data = preDecrypt(key.public);
@@ -246,8 +193,12 @@ function encryptEmail () {
 				return;
 			}
 			var publicKey = data[0];
+			aesKeyFile = (new Date()).getTime() + ' ';
+			aesKeyFile = CryptoJS.MD5(aesKeyFile).toString(CryptoJS.enc.Base16);
+			console.log(aesKeyFile);
 			var cipher = cryptico.encrypt(unescape(encodeURIComponent(plainText)), publicKey);
-			ob('encrypted').value = preEncrypt(cipher.cipher + '|' + recipient);
+			ob('encrypted').value = preEncrypt(cipher.cipher + '|' + recipient + '|' + aesKeyFile);
+			encryptFile();
 		}
 	})
 }
