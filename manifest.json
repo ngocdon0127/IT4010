@@ -10,8 +10,7 @@
 		"contextMenus"
 	],
 	"browser_action": {
-		"default_title": "E2EE",
-		"default_popup": "popup.html"
+		"default_title": "E2EE"
 	},
 	"applications":{
 		"gecko": {
@@ -23,11 +22,11 @@
 	"content_scripts": [
 		{
 			"matches": ["http://*/*", "https://*/*"],
-			"js": ["content-scripts.js"],
-			"css": ["content-css.css"]
+			"js": ["/src/content-scripts.js"],
+			"css": ["/src/content-css.css"]
 		}
 	],
 	"background": {
-		"scripts": ["background.js"]
+		"scripts": ["/src/background.js"]
 	}
 }

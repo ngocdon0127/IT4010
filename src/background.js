@@ -1,6 +1,12 @@
 // id of Gmail tab.
 var sourceTabId = '';
 
+chrome.browserAction.onClicked.addListener(function (tab) {
+	chrome.tabs.create({url: '/src/popup.html'}, function (tab) {
+		// body...
+	});
+})
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.actionType == 'open-encrypt-frame')
 	chrome.windows.create({
