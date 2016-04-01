@@ -166,7 +166,7 @@ port.onMessage.addListener(function(msg) {
 		var d = msg.data;
 		$('#text').text(d);
 		$('#text').val(d);
-		decryptEmail(c, d);
+		// decryptEmail(c, d);
 	}
 });
 
@@ -187,20 +187,27 @@ function decryptEmail(contextMenu, data) {
 			alert('Could not find private key of ' + data[1]);
 			return;
 		}
-		try {
-			var privateKey = items[data[1]].private;
-			var passphrase = prompt('Nhập passphrase:', '');
-			privateKey = CryptoJS.AES.decrypt(privateKey, passphrase).toString(CryptoJS.enc.Utf8);
-			privateKey = preDecrypt(privateKey);
-			var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));
-			plainText = decodeURIComponent(escape(plainText.plaintext)).split('|');
-			$('#decrypted').val(plainText[0]);
-			aesKeyFile = plainText[1];
-			// console.log(aesKeyFile);
-			decryptFile();
+		if (items[data[1]].isPairKey == 1){
+			try {
+				var privateKey = items[data[1]].private;
+				var passphrase = prompt('Nhập passphrase của ' + data[1] + ':', '');
+				privateKey = CryptoJS.AES.decrypt(privateKey, passphrase).toString(CryptoJS.enc.Utf8);
+				privateKey = preDecrypt(privateKey);
+				var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));
+				plainText = decodeURIComponent(escape(plainText.plaintext)).split('|');
+				$('#decrypted').val(plainText[0]);
+				aesKeyFile = plainText[1];
+				// console.log(aesKeyFile);
+				if (ob('attach').files.length > 0){
+					decryptFile();
+				}
+			}
+			catch (e){
+				alert('Email is corrupted or invalid passphrase.');
+			}
 		}
-		catch (e){
-			alert('Email is corrupted or invalid passphrase.');
+		else{
+			alert('Private key of ' + data[1] + ' is not exist.');
 		}
 	})
 }

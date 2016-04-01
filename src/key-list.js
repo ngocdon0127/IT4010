@@ -69,3 +69,50 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 		}
 	})
 });
+
+ob('btnImportKeyPair').addEventListener('click', function () {
+	var encryptedPriv = ob('priv').value;
+	var passphrase = ob('passphrase').value;
+	try{
+		var priv = CryptoJS.AES.decrypt(encryptedPriv, passphrase).toString(CryptoJS.enc.Utf8);
+		console.log(priv);
+		priv = preDecrypt(priv);
+		console.log(priv);
+		var data = priv.split('|');
+		if (data.length < parametersBigint.length){
+			throw new Error('Private Key is corrypted.');
+		}
+		var email = data[data.length - 1];
+		var p = data[0] + '|' + email;
+		p = preEncrypt(p);
+		STORAGE_AREA.get(email, function (items) {
+			if (!jQuery.isEmptyObject(items)){
+				var c = confirm('Email ' + email + ' has already saved before. Overwrite?');
+				if (c == true){
+					var ob = {};
+					ob[email] = {
+						isPairKey: 1,
+						public: p,
+						private: encryptedPriv
+					}
+					STORAGE_AREA.set(ob, function () {
+					});
+				}
+			}
+			else{
+				var ob = {};
+				ob[email] = {
+					isPairKey: 1,
+					public: p,
+					private: encryptedPriv
+				}
+				STORAGE_AREA.set(ob, function () {
+					addIndexes(email);
+				});
+			}
+		})
+	}
+	catch (e){
+		alert(e.toString());
+	}
+});

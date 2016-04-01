@@ -27,11 +27,12 @@
 
 	<!-- https://github.com/eligrey/FileSaver.js - used to save decrypted attachments-->
 	<script src="/res/FileSaver.js"></script>
+	<script src="/src/consts-and-funcs.js"></script>
 </head>
 <body>
 	<div class="container">
 			<div class="form-group">
-				<input type="text" id="text" class="form-control" placeholder="Text"/>
+				<textarea type="text" id="text" class="form-control" placeholder="Text"></textarea>
 			</div>
 			<div class="form-group">
 				<input type="text" id="key" class="form-control" placeholder="Key"/>
@@ -46,7 +47,7 @@
 				<button class="btn btn-success" id="btnDecrypt" >Decrypt</button>
 			</div>
 			<div class="form-group">
-				<input type="text" id="decrypted" class="form-control"/>
+				<textarea type="text" id="decrypted" class="form-control"></textarea>
 			</div>
 			<div class="form-group">
 				<input type="file" name="attach" id="attach" multiple>
@@ -59,7 +60,6 @@
 				<button class="btn btn-info" id="btnOptions">Options</button>
 			</div>
 			<script src="cryptojs.js"></script>
-			<script src="consts-and-funcs.js"></script>
 	</div>
 </body>
 </html>

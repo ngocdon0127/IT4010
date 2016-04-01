@@ -22,7 +22,7 @@ function ob (x) {
 }
 
 function preEncrypt(x) {
-	return CryptoJS.AES.encrypt(x, LOCAL_KEY);
+	return CryptoJS.AES.encrypt(x, LOCAL_KEY).toString();
 }
 
 function preDecrypt (x) {
@@ -151,4 +151,8 @@ var dataURLToBlob = function(dataURL) {
 	}
 
 	return new Blob([uInt8Array], {type: contentType});
+}
+
+function log (x) {
+	console.log(x);
 }

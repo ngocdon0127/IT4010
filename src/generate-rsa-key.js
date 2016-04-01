@@ -127,32 +127,22 @@ function generateRSAKey () {
 	
 	// encrypt email using MD5
 	email = CryptoJS.MD5(email).toString(CryptoJS.enc.Base16);
-	console.log(email);
+	// console.log(email);
 
 	// bit length in RSA Key
 	var bitlen = ob('bitlen').value;
 
 	var RSAKey = cryptico.generateRSAKey(email, bitlen);
-	console.log(LOCAL_KEY);
+	// console.log(LOCAL_KEY);
 	ob('pub').value = preEncrypt(cryptico.publicKeyString(RSAKey) + '|' + ob('email').value);
-	ob('priv').value = preEncrypt(cryptico.privateKeyString(RSAKey) + '|' + ob('email').value);
+	// ob('priv').value = preEncrypt(cryptico.privateKeyString(RSAKey) + '|' + ob('email').value);
+	var prepriv = preEncrypt(cryptico.privateKeyString(RSAKey) + '|' + ob('email').value);
+	// console.log(ob('priv').value);
+	// log(ob('priv').value);
+	ob('priv').value = CryptoJS.AES.encrypt(prepriv, ob('passphrase').value).toString();
 
-	// Log Key
-	console.log(RSAKey);
-	for (var i = 0; i < parametersBigint.length; i++) {
-		parameter = parametersBigint[i];
-		console.log(parameter);
-		// keyObj[parameter] = RSAKey.b16to64(rsakey[parameter].toString(16));
-		console.log(RSAKey[parameter]);
-		console.log(RSAKey[parameter].toString());
-		console.log(RSAKey[parameter].toString(16));
-		console.log(cryptico.b16to64(RSAKey[parameter].toString(16)));
-		console.log('|');
-	}
 }
-function log (x) {
-	console.log(x);
-}
+
 function encrypt () {
 	var publicKey = ob('modal-encrypt-pub').value;
 	var cipher = cryptico.encrypt(unescape(encodeURIComponent(ob('modal-encrypt-data').value)), publicKey);
@@ -186,7 +176,8 @@ function saveRSAKey () {
 		var data = {};
 		data[email] = {
 			public: ob('pub').value,
-			private: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
+			// private: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
+			private: ob('priv').value,
 			isPairKey: 1
 		}
 		chrome.storage.sync.set(data, function () {
