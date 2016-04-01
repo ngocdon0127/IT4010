@@ -1,7 +1,3 @@
-
-function ob(x){
-	return document.getElementById(x);
-}
 function encrypt () {
 	var text = ob('text').value;
 	var key = ob('key').value;
@@ -141,4 +137,25 @@ ob('btnDecrypt').addEventListener('click', decrypt);
 ob('btnOptions').addEventListener('click', function () {
 	chrome.tabs.create({url: 'generate-rsa-key.html'}, function (tab) {
 	});
-})
+});
+
+// connect to background page
+var port = chrome.extension.connect({name: "get-email-content"});
+port.onMessage.addListener(function (msg) {
+	if (msg.emailContent != null){
+		$('#text').val(msg.emailContent);
+	}
+});
+port.postMessage({
+	encryptedData: $('#encrypted').val()
+});
+
+ob('btnTransfer').addEventListener('click', function () {
+	console.log('transfer');
+	console.log($('#encrypted').val());
+	var port = chrome.extension.connect({name: 'transfer-encrypted-data'});
+	port.postMessage({
+		encryptedData: $('#encrypted').val()
+	});
+	window.close();
+});
