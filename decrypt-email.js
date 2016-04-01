@@ -3,7 +3,7 @@
 function handleFileSelect (event) {
 	var files = event.target.files;
 	for (var i = 0; i < files.length; i++) {
-		file = files[i];
+		var file = files[i];
 		console.log(file);
 	};
 
@@ -13,6 +13,9 @@ ob('attach').addEventListener('change', handleFileSelect, false);
 
 var tmpcipher = '';
 var tmpFileName = '';
+
+// use this key to encrypt attachments.
+var aesKeyFile = '';
 
 // Sync Functions
 
@@ -66,7 +69,7 @@ function encryptFile (evt) {
 			ew.postMessage({
 				type: 'encrypt',
 				files: files,
-				key: ob('key').value
+				key: aesKeyFile
 			});
 		}
 		ew.onmessage = function (event) {
@@ -109,42 +112,43 @@ function encryptFile (evt) {
 	}
 }
 
-function decryptFile (evt) {
+function decryptFile () {
 	if (ob('attach').files[0].name.indexOf('.encrypted') < 0){
 		alert('Chọn file .encrypted để giải mã.');
 		return;
 	}
-	evt.target.disabled = true;
-	evt.target.innerHTML = 'Decrypting...';
+	// console.log(aesKeyFile);
+	ob('btnDecrypt').disabled = true;
+	ob('btnDecrypt').innerHTML = 'Decrypting...';
 	if (typeof(Worker) !== 'undefined'){
 		if (typeof(dw) == 'undefined'){
 			dw = new Worker('file-worker.js');
 			dw.postMessage({
 				type: 'decrypt',
 				file: ob('attach').files[0],
-				key: ob('key').value
+				key: aesKeyFile
 			});
 		}
 		dw.onmessage = function (event) {
 			var blob = undefined;
-			console.log(event.data);
+			// console.log(event.data);
 			var dataURL = event.data.dataURL;
 			var filenames = event.data.filenames.split(STR_SEPERATOR);
-			console.log(filenames);
+			// console.log(filenames);
 			for (var i = 0; i < dataURL.length; i++) {
 				var data = dataURL[i];
 				var filename = filenames[i];
 				try{
 					blob = dataURLToBlob(data);
 					// console.log(evt.target);
-					evt.target.disabled = false;
-					evt.target.innerHTML = 'Decrypt File';
+					ob('btnDecrypt').disabled = false;
+					ob('btnDecrypt').innerHTML = 'Decrypt File';
 					saveAs(blob, filename);
 				}
 				catch (e){
 					alert('Key không đúng');
-					evt.target.disabled = false;
-					evt.target.innerHTML = 'Decrypt File';
+					ob('btnDecrypt').disabled = false;
+					ob('btnDecrypt').innerHTML = 'Decrypt File';
 				}
 			};
 			dw.terminate();
@@ -152,8 +156,6 @@ function decryptFile (evt) {
 		}
 	}
 }
-
-ob('btnDecryptFile').addEventListener('click', decryptFile);
 
 // connect to background page
 var port = chrome.extension.connect({name: "Retrieve decrypted email"});
@@ -169,12 +171,12 @@ port.onMessage.addListener(function(msg) {
 });
 
 function decryptEmail(contextMenu, data) {
-	console.log('decrypt');
+	// console.log('decrypt');
 
 	data = preDecrypt(data);
-	console.log(data);
+	// console.log(data);
 	data = data.split('|');
-	console.log(data);
+	// console.log(data);
 	if (data.length < 2){
 		alert('Data is corrupted.');
 		console.log('Data is corrupted.');
@@ -191,7 +193,11 @@ function decryptEmail(contextMenu, data) {
 			privateKey = CryptoJS.AES.decrypt(privateKey, passphrase).toString(CryptoJS.enc.Utf8);
 			privateKey = preDecrypt(privateKey);
 			var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));
-			$('#decrypted').val(decodeURIComponent(escape(plainText.plaintext)));
+			plainText = decodeURIComponent(escape(plainText.plaintext)).split('|');
+			$('#decrypted').val(plainText[0]);
+			aesKeyFile = plainText[1];
+			// console.log(aesKeyFile);
+			decryptFile();
 		}
 		catch (e){
 			alert('Email is corrupted or invalid passphrase.');

@@ -179,7 +179,10 @@ ob('btnOptions').addEventListener('click', function () {
 
 function encryptEmail () {
 	console.log('start func');
-	var plainText = ob('text').value;
+	aesKeyFile = (new Date()).getTime() + ' ';
+	aesKeyFile = CryptoJS.MD5(aesKeyFile).toString(CryptoJS.enc.Base16);
+	console.log(aesKeyFile);
+	var plainText = ob('text').value + '|' + aesKeyFile;
 	var recipient = ob('slRecipient').value;
 	console.log('in encryptEmail func: ');
 	console.log(chrome.storage.sync);
@@ -193,11 +196,8 @@ function encryptEmail () {
 				return;
 			}
 			var publicKey = data[0];
-			aesKeyFile = (new Date()).getTime() + ' ';
-			aesKeyFile = CryptoJS.MD5(aesKeyFile).toString(CryptoJS.enc.Base16);
-			console.log(aesKeyFile);
 			var cipher = cryptico.encrypt(unescape(encodeURIComponent(plainText)), publicKey);
-			ob('encrypted').value = preEncrypt(cipher.cipher + '|' + recipient + '|' + aesKeyFile);
+			ob('encrypted').value = preEncrypt(cipher.cipher + '|' + recipient);
 			encryptFile();
 		}
 	})

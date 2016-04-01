@@ -82,7 +82,7 @@ onmessage = function (msg) {
 		var dataURL = [];
 		for (var i = 0; i < arrCipher.length; i++) {
 			cipher = arrCipher[i];
-			var decrypted = CryptoJS.AES.decrypt(cipher, key).toString(CryptoJS.enc.Latin1);
+			var decrypted = CryptoJS.AES.decrypt(cipher, key).toString(CryptoJS.enc.Utf8);
 			dataURL.push(decrypted);
 			
 		}
