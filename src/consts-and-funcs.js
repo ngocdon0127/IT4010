@@ -62,7 +62,9 @@ cryptico.privateKeyString = function (rsakey) {
 		parameter = parametersBigint[i];
 		privKey += cryptico.b16to64(rsakey[parameter].toString(16)) + '|';
 	}
-	return privKey;
+
+	// remove the last '|' character before returning private key.
+	return privKey.substring(0, privKey.length - 1);
 }
 
 cryptico.RSAKeyFromString = function(string) {
