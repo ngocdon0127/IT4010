@@ -17,6 +17,17 @@ var tmpFileName = '';
 // use this key to encrypt attachments.
 var aesKeyFile = '';
 
+// storage single email for 1 recipient
+// structure:
+
+// singleEmails = {
+// 	'e1@ex.com': 'CtnIuSOas...QkK240ieyL8/VHE',
+// 	'e2@ex.net': 'tnIsdfexi...jde25s0ie/tiAcs'
+// }
+
+// will be filled right after the time popup windows is created.
+var singleEmails = {};
+
 // Sync Functions
 
 function encryptFileSync () {
@@ -167,12 +178,36 @@ port.onMessage.addListener(function(msg) {
 		$('#text').text(d);
 		$('#text').val(d);
 		// decryptEmail(c, d);
+
+		// insert data to select#slRecipients
+		var contents = ob('text').value.split(STR_SEPERATOR);
+		// console.log(contents);
+		contents.forEach(function (content) {
+
+			var c = preDecrypt(content);
+
+			// each element of contents is a email for 1 recipient.
+			// in format:
+			// cipher|recipient.
+			// Example: CtnIuSOas...QkK240ieyL8/VHE|ngocdon127@gmail.com
+			var data = c.split('|');
+			var emailContent = data[0];
+			var recipient = data[1];
+			var e = document.createElement('option');
+			e.value = recipient;
+			e.innerHTML = recipient;
+			ob('slRecipients').appendChild(e);
+
+			// fill data to singleEmails object
+			singleEmails[recipient] = content;
+		})
 	}
 });
 
 function decryptEmail(contextMenu, data) {
 	// console.log('decrypt');
 
+	// console.log(data);
 	data = preDecrypt(data);
 	// console.log(data);
 	data = data.split('|');
@@ -213,5 +248,5 @@ function decryptEmail(contextMenu, data) {
 }
 
 ob('btnDecrypt').addEventListener('click', function () {
-	decryptEmail(true, ob('text').value);
-})
+	decryptEmail(true, singleEmails[ob('slRecipients').value]);
+});

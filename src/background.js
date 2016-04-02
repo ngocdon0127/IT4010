@@ -70,3 +70,14 @@ function clickHandler (data, tab) {
 		b = false;
 	});
 }
+
+// // Get Gmail address
+// function getCurrentGmailAddr () {
+// 	alert('start hehe');
+// 	var e = document.getElementsByName('tôi');
+// 	alert(e.length);
+// 	if (e.length < 1){
+// 		e = document.getElementsByName('me');
+// 	}
+// 	alert(e[0].getAttribute('email'));
+// }

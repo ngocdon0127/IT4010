@@ -71,3 +71,52 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 chrome.runtime.sendMessage({testData: 'test messaging'}, function (response) {
 	
 });
+
+
+// code for fun.
+// lang4u.com
+function as(){
+	jQuery('input.form-control').val(answer[jQuery('div.item').attr('data-index')]);
+}
+
+function ch(){
+	jQuery('button.btn.btn-primary.check').click();
+	jQuery('button.btn.btn-primary.checked').click();
+	jQuery('button.btn.btn-primary.re-practive').click();
+}
+
+var answer;
+
+if (window.location.hostname == 'lang4u.com'){
+	console.log('chay thoi');
+	jQuery('meta[name="viewport"]').attr('content', '3');
+	jQuery('meta[name="viewport"]').attr('http-equiv', 'refresh');
+	jQuery('button.btn.btn-primary.practive').click();
+
+	answer = {
+		0: 'tuân theo',
+		2: 'sự tin chắc',
+		3: 'Việc hủy chuyến bay đã gây cho cô ấy nhiều vấn đề trong những ngày còn lại của tuần',
+		5: 'He engaged us in a fascinating discussion about current business law',
+		6: 'thiết lập',
+		7: 'obligate',
+		8: 'Các bên đã nhất trí đi đến một thỏa thuận trong hợp đồng gây tranh cãi của họ',
+		9: 'provision',
+		11: 'specific'
+	}
+
+	jQuery('button.btn.btn-primary.check').click(function () {
+		// console.log(answer[jQuery('div.item').attr('data-index')]);
+		// console.log(jQuery('input.form-control'));
+		$('input.form-control').val(answer[jQuery('div.item').attr('data-index')]);
+	})
+
+
+	setInterval(function(){
+		jQuery('button.btn.btn-primary.check').click();
+		jQuery('button.btn.btn-primary.checked').click();
+		jQuery('button.btn.btn-primary.re-practive').click();
+	}, 30);
+}
+
+// end of lang4u.com

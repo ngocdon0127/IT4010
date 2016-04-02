@@ -22,7 +22,7 @@
 	"content_scripts": [
 		{
 			"matches": ["http://*/*", "https://*/*"],
-			"js": ["/src/content-scripts.js"],
+			"js": ["/res/jquery.min.js", "/src/content-scripts.js"],
 			"css": ["/src/content-css.css"]
 		}
 	],
