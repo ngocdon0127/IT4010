@@ -7,7 +7,6 @@ var LOCAL_KEY = '8499a08c77ba81cd35d8e93642da34b6';
 
 // Extension saves data to this StorageArea
 var STORAGE_AREA = chrome.storage.sync;
-// console.log(STORAGE_AREA);
 
 // seperator file dataURL with this string. Need to be long and semantic enough.
 // Or, this can be some character which is not included in Base64 index table. 
@@ -17,10 +16,17 @@ var STR_SEPERATOR = 'ngocdon';
 // properties will be used in RSA Key object.
 var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
 
+// short hand
 function ob (x) {
 	return document.getElementById(x);
 }
 
+function log (x) {
+	console.log(x);
+}
+
+// encrypt key with LOCAL_KEY using AES before saving key to Chrome Local Storage.
+// just to make the key looks more beautiful. lol
 function preEncrypt(x) {
 	return CryptoJS.AES.encrypt(x, LOCAL_KEY).toString();
 }
@@ -44,65 +50,12 @@ function addIndexes (email) {
 		chrome.storage.sync.set({
 			indexes: indexes
 		}, function () {
-			// console.log('ok');
+
 		});
 	});
 }
 
-// add new method to Cryptico Library
-
-// self-invoking function
-/*(function(c){
-	var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
-	// var parametersBigint = ["n", "d"];
-
-	c.privateKeyString = function(rsakey) {
-		var keyObj = {};
-		parametersBigint.forEach(function(parameter){
-			keyObj[parameter] = c.b16to64(rsakey[parameter].toString(16));
-		});
-		// for (var i = 0; i < parametersBigint.length; i++) {
-		// 	keyObj[parametersBigint[i]] = c.b16to64(rsakey[parametersBigint[i]].toString(16));
-		// }
-		// e is 3 implicitly
-		return JSON.stringify(keyObj);
-	}
-	c.RSAKeyFromString = function(string) {
-		var keyObj = JSON.parse(string);
-		var rsa = new RSAKey();
-		parametersBigint.forEach(function(parameter){
-			rsa[parameter] = parseBigInt(c.b64to16(keyObj[parameter].split("|")[0]), 16);
-		});
-		rsa.e = parseInt("03", 16);
-		return rsa
-	}
-})(cryptico);*/
-
-// normal function
-// var parametersBigint = ["n", "d"];
-
-// cryptico.privateKeyString = function(rsakey) {
-// 	var keyObj = {};
-// 	for (var i = 0; i < parametersBigint.length; i++) {
-// 		parameter = parametersBigint[i];
-// 		keyObj[parameter] = cryptico.b16to64(rsakey[parameter].toString(16));
-// 	}
-// 	// e is 3 implicitly
-// 	return JSON.stringify(keyObj);
-// }
-// cryptico.RSAKeyFromString = function(string) {
-// 	var keyObj = JSON.parse(string);
-// 	var rsa = new RSAKey();
-// 	for (var i = 0; i < parametersBigint.length; i++) {
-// 		parameter = parametersBigint[i];
-// 		// rsa[parameter] = parseBigInt(cryptico.b64to16(keyObj[parameter].split("|")[0]), 16);
-// 		rsa[parameter] = parseBigInt(cryptico.b64to16(keyObj[parameter]), 16);
-// 	};
-// 	rsa.e = parseInt("03", 16);
-// 	return rsa;
-// }
-
-// new way to display private key
+// add new methods to work with private key
 cryptico.privateKeyString = function (rsakey) {
 	var privKey = '';
 	for (var i = 0; i < parametersBigint.length; i++) {
@@ -123,7 +76,9 @@ cryptico.RSAKeyFromString = function(string) {
 		parameter = parametersBigint[i];
 		// rsa[parameter] = parseBigInt(cryptico.b64to16(keyObj[parameter].split("|")[0]), 16);
 		rsa[parameter] = parseBigInt(cryptico.b64to16(keyParams[i]), 16);
-	};
+	}
+
+	// e is 3 implicitly
 	rsa.e = parseInt("03", 16);
 	return rsa;
 }
@@ -147,12 +102,8 @@ var dataURLToBlob = function(dataURL) {
 	var uInt8Array = new Uint8Array(rawLength);
 
 	for (var i = 0; i < rawLength; ++i) {
-	  uInt8Array[i] = raw.charCodeAt(i);
+		uInt8Array[i] = raw.charCodeAt(i);
 	}
 
 	return new Blob([uInt8Array], {type: contentType});
-}
-
-function log (x) {
-	console.log(x);
 }

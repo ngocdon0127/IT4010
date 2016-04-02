@@ -1,117 +1,5 @@
-// if (typeof(importScripts) === 'undefined'){
-// 	importScripts = function (x) {
-// 		$.getScript(x, function () {
-// 			importScripts('crypto-js/build/rollups/md5.js');
-// 			importScripts('crypto-js/build/components/enc-base64-min.js');
-// 			importScripts('crypto-js/build/rollups/aes.js');
-// 			console.log('jQuery');
-// 		});
-// 	}
-// }
-// else{
-// 	importScripts('crypto-js/build/rollups/md5.js');
-// 	importScripts('crypto-js/build/components/enc-base64-min.js');
-// 	importScripts('crypto-js/build/rollups/aes.js');
-// 	console.log('normal way');
-// }
-
-// importScripts('crypto-js/build/rollups/md5.js');
-// importScripts('crypto-js/build/components/enc-base64-min.js');
-// importScripts('crypto-js/build/rollups/aes.js');
-
-function ob (x) {
-	return document.getElementById(x);
-}
-
 ob('btnGenerateRSAKey').addEventListener('click', generateRSAKey);
 ob('btnSaveRSAKey').addEventListener('click', saveRSAKey);
-
-// self-invoking function
-/*(function(c){
-	var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
-	// var parametersBigint = ["n", "d"];
-
-	c.privateKeyString = function(rsakey) {
-		var keyObj = {};
-		parametersBigint.forEach(function(parameter){
-			keyObj[parameter] = c.b16to64(rsakey[parameter].toString(16));
-		});
-		// for (var i = 0; i < parametersBigint.length; i++) {
-		// 	keyObj[parametersBigint[i]] = c.b16to64(rsakey[parametersBigint[i]].toString(16));
-		// }
-		// e is 3 implicitly
-		return JSON.stringify(keyObj);
-	}
-	c.RSAKeyFromString = function(string) {
-		var keyObj = JSON.parse(string);
-		var rsa = new RSAKey();
-		parametersBigint.forEach(function(parameter){
-			rsa[parameter] = parseBigInt(c.b64to16(keyObj[parameter].split("|")[0]), 16);
-		});
-		rsa.e = parseInt("03", 16);
-		return rsa
-	}
-})(cryptico);*/
-
-// normal function
-var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
-// var parametersBigint = ["n", "d"];
-
-// cryptico.privateKeyString = function(rsakey) {
-// 	var keyObj = {};
-// 	for (var i = 0; i < parametersBigint.length; i++) {
-// 		parameter = parametersBigint[i];
-// 		keyObj[parameter] = cryptico.b16to64(rsakey[parameter].toString(16));
-// 	}
-// 	// e is 3 implicitly
-// 	return JSON.stringify(keyObj);
-// }
-// cryptico.RSAKeyFromString = function(string) {
-// 	var keyObj = JSON.parse(string);
-// 	var rsa = new RSAKey();
-// 	for (var i = 0; i < parametersBigint.length; i++) {
-// 		parameter = parametersBigint[i];
-// 		// rsa[parameter] = parseBigInt(cryptico.b64to16(keyObj[parameter].split("|")[0]), 16);
-// 		rsa[parameter] = parseBigInt(cryptico.b64to16(keyObj[parameter]), 16);
-// 	};
-// 	rsa.e = parseInt("03", 16);
-// 	return rsa;
-// }
-
-// new way to display private key
-cryptico.privateKeyString = function (rsakey) {
-	var privKey = '';
-	for (var i = 0; i < parametersBigint.length; i++) {
-		parameter = parametersBigint[i];
-
-		// seperate parameter parts with '|'
-		privKey += cryptico.b16to64(rsakey[parameter].toString(16)) + '|';
-	}
-
-	// remove the last '|' character before returning private key.
-	return privKey.substring(0, privKey.length - 1);
-}
-
-cryptico.RSAKeyFromString = function(string) {
-	var keyParams = string.split('|');
-	var rsa = new RSAKey();
-	var noOfParams = keyParams.length;
-	for (var i = 0; i < parametersBigint.length; i++) {
-		if (i >= noOfParams){
-			break;
-		}
-		parameter = parametersBigint[i];
-		// rsa[parameter] = parseBigInt(cryptico.b64to16(keyObj[parameter].split("|")[0]), 16);
-		rsa[parameter] = parseBigInt(cryptico.b64to16(keyParams[i]), 16);
-	};
-	rsa.e = parseInt("03", 16);
-	return rsa;
-}
-
-
-function ob (x) {
-	return document.getElementById(x);
-}
 
 function generateRSAKey () {
 
@@ -127,51 +15,28 @@ function generateRSAKey () {
 	
 	// encrypt email using MD5
 	email = CryptoJS.MD5(email).toString(CryptoJS.enc.Base16);
-	// console.log(email);
 
 	// bit length in RSA Key
 	var bitlen = ob('bitlen').value;
 
 	var RSAKey = cryptico.generateRSAKey(email, bitlen);
-	// console.log(LOCAL_KEY);
 	ob('pub').value = preEncrypt(cryptico.publicKeyString(RSAKey) + '|' + ob('email').value);
-	// ob('priv').value = preEncrypt(cryptico.privateKeyString(RSAKey) + '|' + ob('email').value);
 	var prepriv = preEncrypt(cryptico.privateKeyString(RSAKey) + '|' + ob('email').value);
-	// console.log(ob('priv').value);
-	// log(ob('priv').value);
 	ob('priv').value = CryptoJS.AES.encrypt(prepriv, ob('passphrase').value).toString();
-
-}
-
-function encrypt () {
-	var publicKey = ob('modal-encrypt-pub').value;
-	var cipher = cryptico.encrypt(unescape(encodeURIComponent(ob('modal-encrypt-data').value)), publicKey);
-	ob('modal-encrypt-cipher').value = cipher.cipher;
-}
-function decrypt () {
-	var RSAKey = cryptico.RSAKeyFromString(ob('modal-decrypt-priv').value);
-	var plaintext = cryptico.decrypt(ob('modal-decrypt-data').value, RSAKey);
-	// var text = "Message: " + plaintext.plaintext + "\n";
-	// text += "Signed: " + plaintext.signature;
-	// ob('modal-decrypt-plaintext').value = text;
-	ob('modal-decrypt-plaintext').value = decodeURIComponent(escape(plaintext.plaintext));
-	console.log(plaintext);
-}
-function resetModal () {
-	ob('modal-encrypt-cipher').value = '';
-	ob('modal-encrypt-pub').value = '';
-	ob('modal-decrypt-priv').value = '';
-	ob('modal-decrypt-plaintext').value = '';
-	ob('modal-decrypt-data').value = ob('data').value;
-	ob('modal-encrypt-data').value = ob('data').value;
+	
+	jQuery('#keys').fadeIn();
 }
 
 function saveRSAKey () {
+	$('#btnSaveRSAKey').text('Saving...');
 	var email = ob('email').value.trim();
 	chrome.storage.sync.get(email, function (items) {
 		if (!jQuery.isEmptyObject(items)){
-			alert('Đã tồn tại RSA key ứng với email này.');
-			return;
+			var c = confirm('This email has already had a key pair. Overwrite?');
+			$('#btnSaveRSAKey').text('Save RSA Key');
+			if (c == false){
+				return;
+			}
 		}
 		var data = {};
 		data[email] = {
@@ -183,10 +48,13 @@ function saveRSAKey () {
 		chrome.storage.sync.set(data, function () {
 			if (typeof(chrome.runtime.lastError) !== 'undefined'){
 				console.log('error');
+				$('#btnSaveRSAKey').text('Save RSA Key');
 			}
 			else{
 				console.log('ok');
 				addIndexes(email);
+				$('#btnSaveRSAKey').text('Save RSA Key');
+				alert('Key Pair is saved.');
 			}
 		});
 	});

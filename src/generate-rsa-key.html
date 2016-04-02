@@ -37,16 +37,18 @@
 		<div class="form-group">
 			<button class="btn btn-success" id="btnGenerateRSAKey">Generate</button>
 		</div>
-		<div class="form-group">
-			<label for="pub">Public Key:</label>
-			<textarea class="form-control" id="pub" rows="5"></textarea>
-		</div>
-		<div class="form-group">
-			<label for="priv">Private Key:</label>
-			<textarea class="form-control" id="priv" rows="5"></textarea>
-		</div>
-		<div class="form-group">
-			<button class="btn btn-success" id="btnSaveRSAKey">Save RSA Key</button>
+		<div id="keys" style="display: none">
+			<div class="form-group">
+				<label for="pub">Public Key:</label>
+				<textarea class="form-control" id="pub" rows="5"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="priv">Private Key:</label>
+				<textarea class="form-control" id="priv" rows="5"></textarea>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success" id="btnSaveRSAKey">Save RSA Key</button>
+			</div>
 		</div>
 	</div>
 	<script src="generate-rsa-key.js"></script>

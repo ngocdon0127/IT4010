@@ -1,3 +1,4 @@
+'use strict';
 // use this key to encrypt attachments.
 var aesKeyFile = ''
 
@@ -12,6 +13,7 @@ port.postMessage({
 	encryptedData: $('#encrypted').val()
 });
 
+// Transfer encrypted email to Gmail tab.
 ob('btnTransfer').addEventListener('click', function () {
 	console.log('transfer');
 	console.log($('#encrypted').val());
@@ -22,11 +24,6 @@ ob('btnTransfer').addEventListener('click', function () {
 	window.close();
 });
 
-function encrypt () {
-	var text = ob('text').value;
-	var encrypted = 'hehe';
-	ob('encrypted').value = encrypted.toString();
-}
 function handleFileSelect (event) {
 	var files = event.target.files;
 	for (var i = 0; i < files.length; i++) {
@@ -103,58 +100,7 @@ function encryptFile (evt) {
 	}
 }
 
-ob('btnEncryptFile').addEventListener('click', encryptFile);
-
-function decryptFile (evt) {
-	if (ob('attach').files[0].name.indexOf('.encrypted') < 0){
-		alert('Chọn file .encrypted để giải mã.');
-		return;
-	}
-	evt.target.disabled = true;
-	evt.target.innerHTML = 'Decrypting...';
-	if (typeof(Worker) !== 'undefined'){
-		if (typeof(dw) == 'undefined'){
-			dw = new Worker('file-worker.js');
-			dw.postMessage({
-				type: 'decrypt',
-				file: ob('attach').files[0],
-				key: aesKeyFile
-			});
-		}
-		dw.onmessage = function (event) {
-			var blob = undefined;
-			console.log(event.data);
-			var dataURL = event.data.dataURL;
-			var filenames = event.data.filenames.split(STR_SEPERATOR);
-			console.log(filenames);
-			for (var i = 0; i < dataURL.length; i++) {
-				var data = dataURL[i];
-				var filename = filenames[i];
-				try{
-					blob = dataURLToBlob(data);
-					// console.log(evt.target);
-					evt.target.disabled = false;
-					evt.target.innerHTML = 'Decrypt File';
-					saveAs(blob, filename);
-				}
-				catch (e){
-					alert('Key không đúng');
-					evt.target.disabled = false;
-					evt.target.innerHTML = 'Decrypt File';
-				}
-			};
-			dw.terminate();
-			dw = undefined;
-		}
-	}
-}
-
-ob('btnDecryptFile').addEventListener('click', decryptFile);
 ob('btnEncrypt').addEventListener('click', encryptEmail);
-ob('btnOptions').addEventListener('click', function () {
-	chrome.tabs.create({url: 'generate-rsa-key.html'}, function (tab) {
-	});
-});
 
 // insert data to select element
 (function () {

@@ -1,4 +1,3 @@
-// importScripts('consts-and-funcs.js');
 importScripts('/crypto-js/build/rollups/aes.js');
 importScripts('/crypto-js/build/components/enc-base64-min.js');
 
@@ -70,8 +69,6 @@ onmessage = function (msg) {
 		// }
 	}
 	else if (msg.data.type = 'decrypt'){
-		// var ciphers = msg.data.ciphers;
-		// var filenames = msg.data.filenames;
 		var key = msg.data.key;
 		var file = msg.data.file;
 		var reader = new FileReaderSync();
@@ -84,7 +81,6 @@ onmessage = function (msg) {
 			cipher = arrCipher[i];
 			var decrypted = CryptoJS.AES.decrypt(cipher, key).toString(CryptoJS.enc.Utf8);
 			dataURL.push(decrypted);
-			
 		}
 		postMessage({
 			dataURL: dataURL,
