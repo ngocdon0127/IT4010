@@ -9,33 +9,62 @@ var ul = ob('ulKeys');
 					var key = obs[i];
 					var li = document.createElement('li');
 					// li.innerHTML = i;
-					var p = document.createElement('p');
-					p.innerHTML = i;
-					li.appendChild(p);
+					var span = document.createElement('span');
+					span.innerHTML = i;
+					li.appendChild(span);
 					li.setAttribute('class', 'list-group-item');
+					li.style.height = '60px';
+					li.style.display = 'inline-block';
 					// li.addEventListener('click', function () {
 					// 	alert(key.public);
 					// 	console.log(key.public);
 					// })
+					var div = document.createElement('div');
+					div.style.display = 'inline-block';
+					li.appendChild(div);
 					li.addEventListener('mouseover', function () {
 						// li.children[1].fadeOut();
-						jQuery(li.children[1]).fadeIn();
+						li.children[1].children[0].style.transition = 'linear all 0.3s';
+						li.children[1].children[1].style.transition = 'linear all 0.3s';
+						jQuery(li.children[1].children[0]).css('background', '#d9534f');
+						jQuery(li.children[1].children[0]).css('border-color', '#d9534f');
+						jQuery(li.children[1].children[1]).css('background', '#337ab7');
+						jQuery(li.children[1].children[1]).css('border-color', '#337ab7');
 					});
 					li.addEventListener('mouseout', function () {
 						// li.children[1].fadeOut();
-						jQuery(li.children[1]).fadeOut();
+						jQuery(li.children[1].children[0]).css('background', 'white');
+						jQuery(li.children[1].children[0]).css('border-color', 'white');
+						jQuery(li.children[1].children[1]).css('background', 'white');
+						jQuery(li.children[1].children[1]).css('border-color', 'white');
 					})
 					if (key.isPairKey == 1){
-						p.innerHTML += ' <span class="badge">Full</span>';
+						span.innerHTML += ' <span class="badge">Full</span>';
 
 					}
 					var btnDel = document.createElement('button');
 					btnDel.setAttribute('data', i);
 					btnDel.setAttribute('class', 'btn-del btn btn-danger');
-					btnDel.style.display = 'none';
+					// btnDel.style.display = 'none';
 					btnDel.innerHTML = 'Delete this key';
-					li.appendChild(btnDel);
+					div.appendChild(btnDel);
+					// jQuery(li.children[1]).css('cursor', 'pointer');
 					ul.appendChild(li);
+					var btnShow = document.createElement('button');
+					btnShow.setAttribute('data', i);
+					btnShow.setAttribute('class', 'btn-show btn btn-primary');
+					btnShow.innerHTML = 'Show';
+					div.appendChild(btnShow);
+					jQuery(li.children[1].children[0]).css('background', 'white');
+					jQuery(li.children[1].children[0]).css('border-color', 'white');
+					jQuery(li.children[1].children[1]).css('background', 'white');
+					jQuery(li.children[1].children[1]).css('border-color', 'white');
+					jQuery(li.children[1].children[0]).hover(
+						function () {
+							jQuery(this).css('background', 'yellow');
+					}, function () {
+							jQuery(this).css('background', '#d9534f');
+					})
 				})
 			})
 		}
@@ -44,6 +73,8 @@ var ul = ob('ulKeys');
 
 // Add onclick event for button
 function addEventBtns () {
+
+	// event for Delete buttons
 	var btns = document.getElementsByClassName('btn-del');
 	// console.log(btns);
 	for (var i = 0; i < btns.length; i++) {
@@ -69,7 +100,51 @@ function addEventBtns () {
 			})
 		})
 	}
+
+	// event for Show buttons
+	var btns = document.getElementsByClassName('btn-show');
+	// console.log(btns);
+	for (var i = 0; i < btns.length; i++) {
+		var btn = btns[i];
+		btn.addEventListener('click', function (evt) {
+			// console.log(evt.target.getAttribute('data'));
+			var email = evt.target.getAttribute('data');
+			STORAGE_AREA.get(email, function (items) {
+				var key = items[email];
+				jQuery('#modal-show-key').modal('show');
+				ob('email').value = email;
+				ob('email').innerHTML = email;
+				ob('pubKey').value = key.public;
+				ob('pubKey').innerHTML = key.public;
+				ob('privKey').innerHTML = '';
+				ob('privKey').setAttribute('data', key.private);
+			})
+		})
+	}
 }
+
+ob('btnShowPrivateKey').addEventListener('click', function () {
+	var email = ob('email').innerHTML;
+	var priv = ob('privKey').getAttribute('data');
+	if (priv.length < 1){
+		alert('Private Key of ' + email + ' is not exist.');
+		return;
+	}
+	var passphrase = prompt('Insert passphrase for email ' + ob('email').innerHTML);
+	try{
+		var p = CryptoJS.AES.decrypt(priv, passphrase).toString(CryptoJS.enc.Utf8);
+		p = preDecrypt(p).split('|');
+		if (email != p[p.length - 1]){
+			alert('Email not match');
+		}
+		else{
+			ob('privKey').innerHTML = priv;
+		}
+	}
+	catch (e){
+		alert('Passphrase is incorrect.');
+	}
+})
 
 // 
 document.addEventListener('DOMContentLoaded', function () {
