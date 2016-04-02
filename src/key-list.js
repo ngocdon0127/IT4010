@@ -8,20 +8,74 @@ var ul = ob('ulKeys');
 				chrome.storage.sync.get(i, function (obs) {
 					var key = obs[i];
 					var li = document.createElement('li');
-					li.innerHTML = i;
-					li.addEventListener('click', function () {
-						alert(key.public);
-						console.log(key.public);
+					// li.innerHTML = i;
+					var p = document.createElement('p');
+					p.innerHTML = i;
+					li.appendChild(p);
+					li.setAttribute('class', 'list-group-item');
+					// li.addEventListener('click', function () {
+					// 	alert(key.public);
+					// 	console.log(key.public);
+					// })
+					li.addEventListener('mouseover', function () {
+						// li.children[1].fadeOut();
+						jQuery(li.children[1]).fadeIn();
+					});
+					li.addEventListener('mouseout', function () {
+						// li.children[1].fadeOut();
+						jQuery(li.children[1]).fadeOut();
 					})
 					if (key.isPairKey == 1){
-						li.innerHTML += ' Full';
+						p.innerHTML += ' <span class="badge">Full</span>';
+
 					}
+					var btnDel = document.createElement('button');
+					btnDel.setAttribute('data', i);
+					btnDel.setAttribute('class', 'btn-del btn btn-danger');
+					btnDel.style.display = 'none';
+					btnDel.innerHTML = 'Delete this key';
+					li.appendChild(btnDel);
 					ul.appendChild(li);
 				})
 			})
 		}
-	})
+	});
 })();
+
+// Add onclick event for button
+function addEventBtns () {
+	var btns = document.getElementsByClassName('btn-del');
+	// console.log(btns);
+	for (var i = 0; i < btns.length; i++) {
+		var btn = btns[i];
+		btn.addEventListener('click', function (evt) {
+			// console.log(evt.target.getAttribute('data'));
+			var email = evt.target.getAttribute('data');
+			var c = confirm('Delete key for ' + email + '?');
+			if (c == false){
+				return;
+			}
+			STORAGE_AREA.remove(email, function () {
+				STORAGE_AREA.get('indexes', function (items) {
+					var indexes = items.indexes;
+					var pos = -1;
+					while ((pos = indexes.indexOf(email)) > -1){
+						indexes.splice(pos, 1);
+					}
+					STORAGE_AREA.set({indexes: indexes}, function () {
+						window.location = (window.location.href);
+					})
+				})
+			})
+		})
+	}
+}
+
+// 
+document.addEventListener('DOMContentLoaded', function () {
+	setTimeout(addEventBtns, 1000);
+})
+
 
 ob('btnImportPublicKey').addEventListener('click', function () {
 	var p = ob('pub').value;
@@ -53,6 +107,7 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 					private: ''
 				}
 				STORAGE_AREA.set(ob, function () {
+					location.reload(true);
 				});
 			}
 		}
@@ -96,6 +151,7 @@ ob('btnImportKeyPair').addEventListener('click', function () {
 						private: encryptedPriv
 					}
 					STORAGE_AREA.set(ob, function () {
+						location.reload(true);
 					});
 				}
 			}

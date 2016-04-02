@@ -91,13 +91,26 @@ port.onMessage.addListener(function(msg) {
 		// console.log(contents);
 		contents.forEach(function (content) {
 
-			var c = preDecrypt(content);
+			var c = '';
+			try{
+				c = preDecrypt(content);
+			}
+			catch (e){
+				alert('Email is corrupted.');
+				window.close();
+				return;
+			}
 
 			// each element of contents is a email for 1 recipient.
 			// in format:
 			// cipher|recipient.
 			// Example: CtnIuSOas...QkK240ieyL8/VHE|ngocdon127@gmail.com
 			var data = c.split('|');
+			if (data.length < 2){
+				alert('Email content is corrupted.');
+				window.close();
+				return;
+			}
 			var emailContent = data[0];
 			var recipient = data[1];
 			var e = document.createElement('option');

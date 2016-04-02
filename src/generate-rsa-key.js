@@ -38,6 +38,9 @@ function saveRSAKey () {
 				return;
 			}
 		}
+		else{
+			addIndexes(email);
+		}
 		var data = {};
 		data[email] = {
 			public: ob('pub').value,
@@ -52,7 +55,6 @@ function saveRSAKey () {
 			}
 			else{
 				console.log('ok');
-				addIndexes(email);
 				$('#btnSaveRSAKey').text('Save RSA Key');
 				alert('Key Pair is saved.');
 			}

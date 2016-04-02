@@ -53,12 +53,19 @@ chrome.contextMenus.create({
 // Context Menu click hander
 function clickHandler (data, tab) {
 	chrome.windows.create({
-		url: "/src/decrypt-email.html"
+		url: "/src/decrypt-email.html",
 		// type: "panel"
 	});
 	var b = true; // detect if user use context menu
 	chrome.extension.onConnect.addListener(function(port) {
-		port.postMessage({contextMenu: b, data: data.selectionText});
+		port.postMessage({
+			contextMenu: b,
+
+			// Character ZERO WIDTH SPACE (unicode u200B - 8203) 
+			// sometimes appears in selectionText when user double click.
+			// remove it and trim() string before sending to decrypt-email.html
+			data: data.selectionText.replace(/\u200B/g, '').trim()
+		});
 		b = false;
 	});
 }
