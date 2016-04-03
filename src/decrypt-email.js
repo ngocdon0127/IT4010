@@ -75,6 +75,8 @@ function decryptFile () {
 			};
 			dw.terminate();
 			dw = undefined;
+			ob('btnDecrypt').classList.remove('loading');
+			ob('btnDecrypt').removeAttribute('disabled');
 		}
 	}
 }
@@ -161,6 +163,10 @@ function decryptEmail(contextMenu, data) {
 				aesKeyFile = plainText[1];
 				// console.log(aesKeyFile);
 				decryptFile();
+				if (ob('attach').files.length < 1){
+					ob('btnDecrypt').classList.remove('loading');
+					ob('btnDecrypt').removeAttribute('disabled');
+				}
 			}
 			catch (e){
 				alert('Email is corrupted or invalid passphrase.');
@@ -175,3 +181,13 @@ function decryptEmail(contextMenu, data) {
 ob('btnDecrypt').addEventListener('click', function () {
 	decryptEmail(true, singleEmails[ob('slRecipients').value]);
 });
+
+
+var loading = function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	e.target.classList.add('loading');
+	e.target.setAttribute('disabled','disabled');
+};
+
+ob('btnDecrypt').addEventListener('click', loading);

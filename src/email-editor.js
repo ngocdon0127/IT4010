@@ -57,8 +57,10 @@ function encryptFile (evt) {
 			});
 		}
 		ew.onmessage = function (event) {
-			ob('btnEncrypt').disabled = false;
-			ob('btnEncrypt').innerHTML = 'Encrypt';
+			// ob('btnEncrypt').disabled = false;
+			// ob('btnEncrypt').innerHTML = 'Encrypt';
+			ob('btnEncrypt').classList.remove('loading');
+			ob('btnEncrypt').removeAttribute('disabled');
 			ob('file-info').value = 'File has been encrypted.';
 			var tmpcipher = event.data.cipher;
 			var filenames = event.data.filenames;
@@ -159,6 +161,10 @@ function encryptEmail () {
 			clearInterval(interval);
 			jQuery('#encrypted').fadeIn();
 			log('done');
+			if (ob('attach').files.length < 1){
+				ob('btnEncrypt').classList.remove('loading');
+				ob('btnEncrypt').removeAttribute('disabled');
+			}
 		}
 	}, 1);
 }
@@ -187,3 +193,15 @@ function ee (recipient, plainText, obj) {
 	})
 }
 
+
+var loading = function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	e.target.classList.add('loading');
+	e.target.setAttribute('disabled','disabled');
+	setTimeout(function(){
+		
+	},1500);
+};
+
+ob('btnEncrypt').addEventListener('click', loading);
