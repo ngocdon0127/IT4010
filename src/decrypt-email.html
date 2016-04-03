@@ -6,6 +6,9 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="/res/bootstrap.min.css">
 
+	<!-- Custom CSS-->
+	<link rel="stylesheet" href="/src/style.css">
+
 	<!-- jQuery library -->
 	<script src="/res/jquery.min.js"></script>
 
@@ -46,7 +49,7 @@
 				<button class="btn btn-success" id="btnDecrypt">Decrypt</button>
 			</div>
 			<div class="form-group">
-				<textarea id="decrypted" class="form-control"></textarea>
+				<div contenteditable="true" id="decrypted" style="display: none"></div>
 			</div>
 			<script src="decrypt-email.js"></script>
 	</div>

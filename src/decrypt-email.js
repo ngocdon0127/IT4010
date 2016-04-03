@@ -1,5 +1,6 @@
 'use strict';
 
+// Log data to console when user choose files.
 function handleFileSelect (event) {
 	var files = event.target.files;
 	for (var i = 0; i < files.length; i++) {
@@ -8,6 +9,8 @@ function handleFileSelect (event) {
 	};
 
 }
+
+// add event listener for choosing-files event.
 ob('attach').addEventListener('change', handleFileSelect, false);
 
 
@@ -16,26 +19,27 @@ var aesKeyFile = '';
 
 // storage single email for 1 recipient
 // structure:
-
 // singleEmails = {
 // 	'e1@ex.com': 'CtnIuSOas...QkK240ieyL8/VHE',
 // 	'e2@ex.net': 'tnIsdfexi...jde25s0ie/tiAcs'
 // }
-
 // will be filled right after the time popup windows is created.
 var singleEmails = {};
 
-// Async Functions => Good
-
+// decrypt worker.
 var dw = undefined;
-var files;
 
+// Decrypt attachments.
 function decryptFile () {
+	if (ob('attach').files.length < 1){
+		return;
+	}
+
+	// check file name.
 	if (ob('attach').files[0].name.indexOf('.encrypted') < 0){
 		alert('Chọn file .encrypted để giải mã.');
 		return;
 	}
-	// console.log(aesKeyFile);
 	ob('btnDecrypt').disabled = true;
 	ob('btnDecrypt').innerHTML = 'Decrypting...';
 	if (typeof(Worker) !== 'undefined'){
@@ -60,13 +64,13 @@ function decryptFile () {
 					blob = dataURLToBlob(data);
 					// console.log(evt.target);
 					ob('btnDecrypt').disabled = false;
-					ob('btnDecrypt').innerHTML = 'Decrypt File';
+					ob('btnDecrypt').innerHTML = 'Decrypt';
 					saveAs(blob, filename);
 				}
 				catch (e){
 					alert('Key không đúng');
 					ob('btnDecrypt').disabled = false;
-					ob('btnDecrypt').innerHTML = 'Decrypt File';
+					ob('btnDecrypt').innerHTML = 'Decrypt';
 				}
 			};
 			dw.terminate();
@@ -150,12 +154,13 @@ function decryptEmail(contextMenu, data) {
 				privateKey = preDecrypt(privateKey);
 				var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));
 				plainText = decodeURIComponent(escape(plainText.plaintext)).split('|');
-				$('#decrypted').val(plainText[0]);
+				$('#decrypted').html(function () {
+					return plainText[0];
+				});
+				$('#decrypted').fadeIn();
 				aesKeyFile = plainText[1];
 				// console.log(aesKeyFile);
-				if (ob('attach').files.length > 0){
-					decryptFile();
-				}
+				decryptFile();
 			}
 			catch (e){
 				alert('Email is corrupted or invalid passphrase.');
