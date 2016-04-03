@@ -193,15 +193,5 @@ function ee (recipient, plainText, obj) {
 	})
 }
 
-
-var loading = function(e) {
-	e.preventDefault();
-	e.stopPropagation();
-	e.target.classList.add('loading');
-	e.target.setAttribute('disabled','disabled');
-	setTimeout(function(){
-		
-	},1500);
-};
-
-ob('btnEncrypt').addEventListener('click', loading);
+// Add loading effect for button
+ob('btnEncrypt').addEventListener('click', BUTTON_LOADING);

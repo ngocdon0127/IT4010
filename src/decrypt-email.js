@@ -182,12 +182,5 @@ ob('btnDecrypt').addEventListener('click', function () {
 	decryptEmail(true, singleEmails[ob('slRecipients').value]);
 });
 
-
-var loading = function(e) {
-	e.preventDefault();
-	e.stopPropagation();
-	e.target.classList.add('loading');
-	e.target.setAttribute('disabled','disabled');
-};
-
-ob('btnDecrypt').addEventListener('click', loading);
+// Add loading effect
+ob('btnDecrypt').addEventListener('click', BUTTON_LOADING);

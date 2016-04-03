@@ -109,3 +109,11 @@ var dataURLToBlob = function(dataURL) {
 
 	return new Blob([uInt8Array], {type: contentType});
 }
+
+// loading effect for button
+var BUTTON_LOADING = function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	e.target.classList.add('loading');
+	e.target.setAttribute('disabled','disabled');
+};
