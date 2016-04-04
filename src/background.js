@@ -47,11 +47,11 @@ chrome.contextMenus.create({
 	onclick: clickHandler
 });
 
-// Context Menu click hander
+// Context Menu click handler
 function clickHandler (data, tab) {
 	chrome.windows.create({
 		url: "/src/decrypt-email.html",
-		type: "panel"
+		// type: "panel"
 	});
 	chrome.extension.onConnect.addListener(function(port) {
 		port.postMessage({

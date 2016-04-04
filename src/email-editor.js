@@ -98,8 +98,6 @@ function encryptFile (evt) {
 	}
 }
 
-ob('btnEncrypt').addEventListener('click', encryptEmail);
-
 /**
  * Insert data to select element
  */
@@ -153,6 +151,22 @@ function encryptEmail () {
 		var opt = sl.options[i];
 		if (opt.selected){
 			noOfRecipients++;
+		}
+	}
+
+	if (noOfRecipients < 1){
+		alert('Select at least 1 recipient.');
+		ob('btnEncrypt').classList.remove('loading');
+		ob('btnEncrypt').removeAttribute('disabled');
+		return;
+	}
+
+	if (ob('attach').files.length > 0){
+		if (checkFile()){
+			alert('The maximum size of a single file is 25 MB and total size must less than 90 MB.');
+			ob('btnEncrypt').classList.remove('loading');
+			ob('btnEncrypt').removeAttribute('disabled');
+			return;
 		}
 	}
 
@@ -216,5 +230,30 @@ function ee (recipient, plainText, obj) {
 	})
 }
 
-// Add loading effect for button
+// Add event handler for btnEncrypt
+// Loading effect
 ob('btnEncrypt').addEventListener('click', BUTTON_LOADING);
+// Encrypt Email
+ob('btnEncrypt').addEventListener('click', encryptEmail);
+
+/**
+ * Check the files user choose.
+ *
+ * @return true if there is at least 1 file bigger than 25 MB, 
+ * or total size of all files is greater than 90 MB.
+ * false otherwise.
+ */
+function checkFile () {
+	var files = ob('attach').files;
+	var total = 0;
+	for (var i = 0; i < files.length; i++) {
+		if (files[i].size > 1024 * 1024 * 25){
+			return true;
+		}
+		total += files[i].size;
+		if (total > 90 * 1024 * 1024){
+			return true;
+		}
+	}
+	return false;
+}

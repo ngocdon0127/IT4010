@@ -82,46 +82,54 @@ function decryptFile () {
 // connect to background page
 var port = chrome.extension.connect({name: "Retrieve decrypted email"});
 port.onMessage.addListener(function(msg) {
-	// if user use context menu
-	if (msg.contextMenu == true){
-		var d = msg.data;
-		$('#text').text(d);
-		$('#text').val(d);
-
-		// insert data to select#slRecipients
-		var contents = ob('text').value.split(STR_SEPERATOR);
-		contents.forEach(function (content) {
-			var c = '';
-			try{
-				c = preDecrypt(content);
-			}
-			catch (e){
-				alert('Email is corrupted.');
-				window.close();
-				return;
-			}
-
-			// each element of contents is a email for 1 recipient.
-			// in format:
-			// cipher|recipient.
-			// Example: CtnIuSOas...QkK240ieyL8/VHE|ngocdon127@gmail.com
-			var data = c.split('|');
-			if (data.length < 2){
-				alert('Email content is corrupted.');
-				window.close();
-				return;
-			}
-			var emailContent = data[0];
-			var recipient = data[1];
-			var e = document.createElement('option');
-			e.value = recipient;
-			e.innerHTML = recipient;
-			ob('slRecipients').appendChild(e);
-
-			// fill data to singleEmails object
-			singleEmails[recipient] = content;
-		})
+	
+	if (!msg.hasOwnProperty('data')){
+		return;
 	}
+	if (msg.data.length < 1){
+		return;
+	}
+	var d = msg.data;
+	$('#text').text(d);
+	$('#text').val(d);
+
+	// insert data to select#slRecipients
+	var contents = ob('text').value.split(STR_SEPERATOR);
+	console.log(contents);
+	contents.forEach(function (content) {
+		var c = '';
+		try{
+			c = preDecrypt(content);
+		}
+		catch (e){
+			alert('Email is corrupted.');
+			window.close();
+			return;
+		}
+
+		// each element of contents is a email for 1 recipient.
+		// in format:
+		// cipher|recipient.
+		// Example: CtnIuSOas...QkK240ieyL8/VHE|ngocdon127@gmail.com
+		var data = c.split('|');
+		console.log(data);
+		if (data.length < 2){
+			alert('Email content is corrupted.');
+			// window.close();
+			return;
+		}
+		var emailContent = data[0];
+		var recipient = data[1];
+		log('recipient');
+		log(recipient);
+		var e = document.createElement('option');
+		e.value = recipient;
+		e.innerHTML = recipient;
+		ob('slRecipients').appendChild(e);
+
+		// fill data to singleEmails object
+		singleEmails[recipient] = content;
+	})
 });
 
 /**
