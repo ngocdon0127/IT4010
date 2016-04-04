@@ -3,8 +3,6 @@
 var aesKeyFile = '';
 
 var ew = undefined;
-var dw = undefined;
-var oldSize = 0;
 var files = undefined;
 
 // connect to background page
@@ -73,7 +71,7 @@ function encryptFile (evt) {
 			for (var i = 0; i < arrCipher.length; i++) {
 				var f = arrCipher[i];
 				fCipher += f + STR_SEPERATOR;
-				oldSize = files[i].size;
+				var oldSize = files[i].size;
 				var tmpbrowser = event.data.browser;
 				ob('file-info').value += "\n\nName: " + files[i].name + ".";
 				ob('file-info').value += "\nOriginal Size: " + (oldSize / 1024 / 1024).toFixed(2) + " MiB.";

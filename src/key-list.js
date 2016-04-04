@@ -10,11 +10,11 @@ var ul = ob('ulKeys');
 					var li = document.createElement('li');
 					// li.innerHTML = i;
 					var span = document.createElement('span');
+					span.setAttribute('class', 'col-md-7');
 					span.innerHTML = i;
 					li.appendChild(span);
 					li.setAttribute('class', 'list-group-item');
 					li.style.height = '60px';
-					li.style.display = 'inline-block';
 					// li.addEventListener('click', function () {
 					// 	alert(key.public);
 					// 	console.log(key.public);
