@@ -14,13 +14,13 @@ e.addEventListener('click', clickHandler);
 
 // render function
 function clickHandler() {
-	console.log('clicked');
+	// console.log('clicked');
 	chrome.runtime.sendMessage({
 			actionType: 'open-encrypt-frame',
 			emailContent: document.getElementsByClassName('Am Al editable LW-avf')[0].innerHTML
 		}, 
 		function (response) {
-			console.log(response);
+
 	});
 }
 
@@ -61,13 +61,9 @@ var fRender = function () {
 // receive encrypted email
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.encryptedData != null){
-		console.log(request.encryptedData);
+		console.log(sender);
+		console.log(request);
 		editable.value = request.encryptedData;
 		editable.innerHTML = request.encryptedData;
 	}
-});
-
-// just send test message to get this tab id.
-chrome.runtime.sendMessage({testData: 'test messaging'}, function (response) {
-	
 });

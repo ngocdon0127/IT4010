@@ -8,7 +8,6 @@ var ul = ob('ulKeys');
 				chrome.storage.sync.get(i, function (obs) {
 					var key = obs[i];
 					var li = document.createElement('li');
-					// li.innerHTML = i;
 					var span = document.createElement('span');
 					span.setAttribute('class', 'col-md-7');
 					span.innerHTML = i;
@@ -19,7 +18,6 @@ var ul = ob('ulKeys');
 					div.style.display = 'inline-block';
 					li.appendChild(div);
 					li.addEventListener('mouseover', function () {
-						// li.children[1].fadeOut();
 						li.children[1].children[0].style.transition = 'linear all 0.3s';
 						li.children[1].children[1].style.transition = 'linear all 0.3s';
 						jQuery(li.children[1].children[0]).css('background', '#d9534f');
@@ -28,7 +26,6 @@ var ul = ob('ulKeys');
 						jQuery(li.children[1].children[1]).css('border-color', '#337ab7');
 					});
 					li.addEventListener('mouseout', function () {
-						// li.children[1].fadeOut();
 						jQuery(li.children[1].children[0]).css('background', 'white');
 						jQuery(li.children[1].children[0]).css('border-color', 'white');
 						jQuery(li.children[1].children[1]).css('background', 'white');
@@ -41,10 +38,8 @@ var ul = ob('ulKeys');
 					var btnDel = document.createElement('button');
 					btnDel.setAttribute('data', i);
 					btnDel.setAttribute('class', 'btn-del btn btn-danger');
-					// btnDel.style.display = 'none';
 					btnDel.innerHTML = 'Delete this key';
 					div.appendChild(btnDel);
-					// jQuery(li.children[1]).css('cursor', 'pointer');
 					ul.appendChild(li);
 					var btnShow = document.createElement('button');
 					btnShow.setAttribute('data', i);
@@ -67,7 +62,9 @@ var ul = ob('ulKeys');
 	});
 })();
 
-// Add onclick event for button
+/**
+ * Add onclick event for button
+ */
 function addEventBtns () {
 
 	// event for Delete buttons
@@ -99,15 +96,14 @@ function addEventBtns () {
 
 	// event for Show buttons
 	var btns = document.getElementsByClassName('btn-show');
-	// console.log(btns);
 	for (var i = 0; i < btns.length; i++) {
 		var btn = btns[i];
 		btn.addEventListener('click', function (evt) {
-			// console.log(evt.target.getAttribute('data'));
 			var email = evt.target.getAttribute('data');
 			STORAGE_AREA.get(email, function (items) {
 				var key = items[email];
 				jQuery('#modal-show-key').modal('show');
+				// Fill data to modal
 				ob('email').value = email;
 				ob('email').innerHTML = email;
 				ob('pubKey').value = key.public;
@@ -130,6 +126,10 @@ ob('btnShowPrivateKey').addEventListener('click', function () {
 	try{
 		var p = CryptoJS.AES.decrypt(priv, passphrase).toString(CryptoJS.enc.Utf8);
 		p = preDecrypt(p).split('|');
+		/**
+		 * p[0] is Private Key
+		 * p[1] is the corresponding email
+		 */
 		if (email != p[p.length - 1]){
 			alert('Email not match');
 		}
@@ -144,7 +144,7 @@ ob('btnShowPrivateKey').addEventListener('click', function () {
 
 // 
 document.addEventListener('DOMContentLoaded', function () {
-	setTimeout(addEventBtns, 1000);
+	setTimeout(addEventBtns, 100);
 })
 
 
@@ -156,10 +156,12 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 	}
 	publicKey = preDecrypt(p);
 
-	// Public Key should have 2 parts which are seperated by '|' : publicKey|email:
-	// Ex: NBC1kO...CqHd3i=|huyfly14@yahoo.com.vn
-	// The first part is the real public key thay Cryptio can understand.
-	// The second part is the corresponding email.
+	/**
+	 * Public Key should have 2 parts which are seperated by '|' : publicKey|email:
+	 * Ex: NBC1kO...CqHd3i=|huyfly14@yahoo.com.vn
+	 * The first part is the real public key thay Cryptio can understand.
+	 * The second part is the corresponding email.
+	 */
 	var data = publicKey.split('|');
 	if (data.length < 2){
 		alert('Public key không đúng.');
@@ -201,10 +203,12 @@ ob('btnImportKeyPair').addEventListener('click', function () {
 	var passphrase = ob('passphrase').value;
 	try{
 		var priv = CryptoJS.AES.decrypt(encryptedPriv, passphrase).toString(CryptoJS.enc.Utf8);
-		console.log(priv);
 		priv = preDecrypt(priv);
-		console.log(priv);
 		var data = priv.split('|');
+
+		/**
+		 * Private Key must have enough parameters
+		 */
 		if (data.length < parametersBigint.length){
 			throw new Error('Private Key is corrypted.');
 		}

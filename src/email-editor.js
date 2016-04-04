@@ -5,8 +5,9 @@ var aesKeyFile = '';
 var ew = undefined;
 var files = undefined;
 
-// connect to background page
+// connect to background page right after the init time to get email content.
 var port = chrome.extension.connect({name: "get-email-content"});
+// receive email content from background page.
 port.onMessage.addListener(function (msg) {
 	if (msg.emailContent != null){
 		$('#text').html(function () {
@@ -14,21 +15,23 @@ port.onMessage.addListener(function (msg) {
 		});
 	}
 });
-port.postMessage({
-	encryptedData: $('#encrypted').val()
-});
 
 // Transfer encrypted email to Gmail tab.
 ob('btnTransfer').addEventListener('click', function () {
 	console.log('transfer');
 	console.log($('#encrypted').val());
+	// connect to background page.
 	var port = chrome.extension.connect({name: 'transfer-encrypted-data'});
+	// send encrypted email to background page.
 	port.postMessage({
 		encryptedData: $('#encrypted').val()
 	});
 	window.close();
 });
 
+/**
+ * Log chosen files to console. Just for debugging.
+ */
 function handleFileSelect (event) {
 	var files = event.target.files;
 	for (var i = 0; i < files.length; i++) {
@@ -39,6 +42,11 @@ function handleFileSelect (event) {
 }
 ob('attach').addEventListener('change', handleFileSelect, false);
 
+/**
+ * Encrypt attachments
+ *
+ * @param {evt} event button clicked or null
+ */
 function encryptFile (evt) {
 	var date1 = new Date();
 	files = ob('attach').files;
@@ -55,8 +63,6 @@ function encryptFile (evt) {
 			});
 		}
 		ew.onmessage = function (event) {
-			// ob('btnEncrypt').disabled = false;
-			// ob('btnEncrypt').innerHTML = 'Encrypt';
 			ob('btnEncrypt').classList.remove('loading');
 			ob('btnEncrypt').removeAttribute('disabled');
 			ob('file-info').value = 'File has been encrypted.';
@@ -94,7 +100,9 @@ function encryptFile (evt) {
 
 ob('btnEncrypt').addEventListener('click', encryptEmail);
 
-// insert data to select element
+/**
+ * Insert data to select element
+ */
 (function () {
 	STORAGE_AREA.get('indexes', function (items) {
 		var indexes = items.indexes;
@@ -121,14 +129,20 @@ var noOfRecipients = 0;
 // Number of encrypted email for recipients
 var encryptedEmail = 0;
 
+/**
+ * Encrypt the whole email
+ */
 function encryptEmail () {
-	console.log('start func');
+	// reset field.
 	jQuery('#encrypted').val('');
+	// generate a random key
 	aesKeyFile = (new Date()).getTime() + ' ';
 	aesKeyFile = CryptoJS.MD5(aesKeyFile).toString(CryptoJS.enc.Base16);
-	console.log(aesKeyFile);
+
+	// add aesKeyFile to the original email.
+	// send it to recipient.
+	// so that recipient can decrypt attachments.
 	var plainText = ob('text').innerHTML + '|' + aesKeyFile;
-	// console.log(plainText);
 	var sl = ob('slRecipient');
 	var flags = {
 		ef: 0
@@ -153,8 +167,10 @@ function encryptEmail () {
 	}
 	var interval = setInterval(function () {
 		log(encryptedEmail + ' / ' + noOfRecipients + ' done.');
+		// finish encrypting
 		if (encryptedEmail >= noOfRecipients){
 			var encryptedEmailContent = ob('encrypted').value;
+			// remove the last STR_SEPERATOR
 			ob('encrypted').value = encryptedEmailContent.substring(0, encryptedEmailContent.length - STR_SEPERATOR.length);
 			clearInterval(interval);
 			jQuery('#encrypted').fadeIn();
@@ -167,6 +183,13 @@ function encryptEmail () {
 	}, 1);
 }
 
+/**
+ * Encrypt 1 single email for 1 recipient.
+ *
+ * @param {recipient} Email address of recipient
+ * @param {plainText} The original email that will be encrypt
+ * @param {obj} Flags
+ */
 function ee (recipient, plainText, obj) {
 	chrome.storage.sync.get(recipient, function (items) {
 		var key = items[recipient];
@@ -181,6 +204,8 @@ function ee (recipient, plainText, obj) {
 			var cipher = cryptico.encrypt(unescape(encodeURIComponent(plainText)), publicKey);
 			ob('encrypted').value += preEncrypt(cipher.cipher + '|' + recipient) + STR_SEPERATOR;
 			encryptedEmail++;
+
+			// Attachments should be encrypted one single time.
 			if (obj.ef == 0){
 				if (ob('attach').files.length > 0){
 					encryptFile();

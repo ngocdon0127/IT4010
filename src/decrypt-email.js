@@ -14,7 +14,7 @@ function handleFileSelect (event) {
 ob('attach').addEventListener('change', handleFileSelect, false);
 
 
-// use this key to encrypt attachments.
+// use this key to decrypt attachments.
 var aesKeyFile = '';
 
 // storage single email for 1 recipient
@@ -40,8 +40,7 @@ function decryptFile () {
 		alert('Chọn file .encrypted để giải mã.');
 		return;
 	}
-	ob('btnDecrypt').disabled = true;
-	ob('btnDecrypt').innerHTML = 'Decrypting...';
+
 	if (typeof(Worker) !== 'undefined'){
 		if (typeof(dw) == 'undefined'){
 			dw = new Worker('file-worker.js');
@@ -53,26 +52,23 @@ function decryptFile () {
 		}
 		dw.onmessage = function (event) {
 			var blob = undefined;
-			// console.log(event.data);
 			var dataURL = event.data.dataURL;
 			var filenames = event.data.filenames.split(STR_SEPERATOR);
-			// console.log(filenames);
 			for (var i = 0; i < dataURL.length; i++) {
 				var data = dataURL[i];
 				var filename = filenames[i];
 				try{
 					blob = dataURLToBlob(data);
-					// console.log(evt.target);
-					ob('btnDecrypt').disabled = false;
-					ob('btnDecrypt').innerHTML = 'Decrypt';
 					saveAs(blob, filename);
+					ob('btnDecrypt').classList.remove('loading');
+					ob('btnDecrypt').removeAttribute('disabled');
 				}
 				catch (e){
 					alert('Key không đúng');
-					ob('btnDecrypt').disabled = false;
-					ob('btnDecrypt').innerHTML = 'Decrypt';
+					ob('btnDecrypt').classList.remove('loading');
+					ob('btnDecrypt').removeAttribute('disabled');
 				}
-			};
+			}
 			dw.terminate();
 			dw = undefined;
 			ob('btnDecrypt').classList.remove('loading');
@@ -86,17 +82,13 @@ var port = chrome.extension.connect({name: "Retrieve decrypted email"});
 port.onMessage.addListener(function(msg) {
 	// if user use context menu
 	if (msg.contextMenu == true){
-		var c = msg.contextMenu;
 		var d = msg.data;
 		$('#text').text(d);
 		$('#text').val(d);
-		// decryptEmail(c, d);
 
 		// insert data to select#slRecipients
 		var contents = ob('text').value.split(STR_SEPERATOR);
-		// console.log(contents);
 		contents.forEach(function (content) {
-
 			var c = '';
 			try{
 				c = preDecrypt(content);
@@ -130,24 +122,27 @@ port.onMessage.addListener(function(msg) {
 	}
 });
 
-function decryptEmail(contextMenu, data) {
-	// console.log('decrypt');
-
-	// console.log(data);
+function decryptEmail(data) {
 	data = preDecrypt(data);
-	// console.log(data);
+
+	// data must be in this format:
+	// U2FsdGVkX1/YoCfyJ...IatQmW5q4jfSewveW37HbgA6pGgPuap9mKM=|user@gmail.com
 	data = data.split('|');
-	// console.log(data);
+
 	if (data.length < 2){
 		alert('Data is corrupted.');
 		console.log('Data is corrupted.');
 		return;
 	}
 	STORAGE_AREA.get(data[1], function (items) {
+
+		// Chrome doesn't have private key of this email address.
 		if (jQuery.isEmptyObject(items)){
 			alert('Could not find private key of ' + data[1]);
 			return;
 		}
+
+		// Chrome has already storaged key pair of this email before.
 		if (items[data[1]].isPairKey == 1){
 			try {
 				var privateKey = items[data[1]].private;
@@ -156,22 +151,36 @@ function decryptEmail(contextMenu, data) {
 				privateKey = preDecrypt(privateKey);
 				var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));
 				plainText = decodeURIComponent(escape(plainText.plaintext)).split('|');
+
+				// plainText should consist of 1 or 2 parts.
+				// The first part is the original email Alice sends to Bob.
+				// The second part (if exist) is the AES secret key used to encrypt attachments.
+				// These two parts is seperated by '|'
+
+				// Ex:
+				// This is an encrypted email without any attachments.
+				// This is an encrypted email with attachments|somekey.
 				$('#decrypted').html(function () {
 					return plainText[0];
 				});
 				$('#decrypted').fadeIn();
-				aesKeyFile = plainText[1];
-				// console.log(aesKeyFile);
-				decryptFile();
 				if (ob('attach').files.length < 1){
 					ob('btnDecrypt').classList.remove('loading');
 					ob('btnDecrypt').removeAttribute('disabled');
 				}
+				else{
+					aesKeyFile = plainText[1];
+					decryptFile();
+				}
 			}
 			catch (e){
 				alert('Email is corrupted or invalid passphrase.');
+				ob('btnDecrypt').classList.remove('loading');
+				ob('btnDecrypt').removeAttribute('disabled');
 			}
 		}
+
+		// Chrome has public key of this email only.
 		else{
 			alert('Private key of ' + data[1] + ' is not exist.');
 		}
@@ -179,7 +188,7 @@ function decryptEmail(contextMenu, data) {
 }
 
 ob('btnDecrypt').addEventListener('click', function () {
-	decryptEmail(true, singleEmails[ob('slRecipients').value]);
+	decryptEmail(singleEmails[ob('slRecipients').value]);
 });
 
 // Add loading effect
