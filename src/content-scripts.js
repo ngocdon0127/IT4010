@@ -12,7 +12,9 @@ e.innerHTML = 'hehe';
 e.id = 'eframe-cryptojs';
 e.addEventListener('click', clickHandler);
 
-// render function
+/**
+ * Render button
+ */
 function clickHandler() {
 	// console.log('clicked');
 	chrome.runtime.sendMessage({

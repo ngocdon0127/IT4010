@@ -29,7 +29,9 @@ var singleEmails = {};
 // decrypt worker.
 var dw = undefined;
 
-// Decrypt attachments.
+/** 
+ * Decrypt attachments.
+ */
 function decryptFile () {
 	if (ob('attach').files.length < 1){
 		return;
@@ -122,6 +124,11 @@ port.onMessage.addListener(function(msg) {
 	}
 });
 
+/**
+ * Decrypt encrypted email
+ *
+ * @param {string} data encrypted email
+ */
 function decryptEmail(data) {
 	data = preDecrypt(data);
 

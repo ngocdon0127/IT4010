@@ -16,27 +16,51 @@ var STR_SEPERATOR = 'ngocdon';
 // properties will be used in RSA Key object.
 var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
 
-// short hand
+/**
+ * Short hand
+ */
 function ob (x) {
 	return document.getElementById(x);
 }
 
+/**
+ * Short hand
+ */
 function log (x) {
 	console.log(x);
 }
 
-// encrypt key with LOCAL_KEY using AES before saving key to Chrome Local Storage.
-// just to make the key looks more beautiful. lol
+/*
+Encrypt key with LOCAL_KEY using AES before saving key to Chrome Local Storage.
+Just to make the key looks more beautiful. lol
+*/
+
+/**
+ * Encrypt with LOCAL_KEY
+ *
+ * @param {string} x string to be encrypted
+ * @return {string} encrypted string with LOCAL_KEY
+ */
 function preEncrypt(x) {
 	return CryptoJS.AES.encrypt(x, LOCAL_KEY).toString();
 }
 
+/**
+ * Decrypt with LOCAL_KEY
+ *
+ * @param {string} x string to be decrypted
+ * @return {string} the original text
+ */
 function preDecrypt (x) {
 	return CryptoJS.AES.decrypt(x, LOCAL_KEY).toString(CryptoJS.enc.Utf8);
 }
 
 
-// Add new email to indexes list.
+/**
+ * Add new email to indexes list.
+ *
+ * @param {string} email email to be added to indexes[] in Chrome LocalStorage
+ */
 function addIndexes (email) {
 	STORAGE_AREA.get('indexes', function (items) {
 		var indexes = [];
@@ -55,7 +79,14 @@ function addIndexes (email) {
 	});
 }
 
-// add new methods to work with private key
+// Add new methods to work with private key
+
+/**
+ * Extract Private Key from RSA Key object 
+ *
+ * @param {object} rsakey RSA Key object
+ * @return {string} RSA Private Key
+ */
 cryptico.privateKeyString = function (rsakey) {
 	var privKey = '';
 	for (var i = 0; i < parametersBigint.length; i++) {
@@ -67,6 +98,12 @@ cryptico.privateKeyString = function (rsakey) {
 	return privKey.substring(0, privKey.length - 1);
 }
 
+/**
+ * Reproduce RSA Key from string
+ *
+ * @param {string} string RSA Private Key
+ * @return {object} RSA Key Object
+ */
 cryptico.RSAKeyFromString = function(string) {
 	var keyParams = string.split('|');
 	var rsa = new RSAKey();
@@ -85,7 +122,12 @@ cryptico.RSAKeyFromString = function(string) {
 	return rsa;
 }
 
-// dataURLToBlob => get from https://github.com/ebidel/filer.js/blob/master/src/filer.js#L137
+/**
+ * dataURLToBlob => get from https://github.com/ebidel/filer.js/blob/master/src/filer.js#L137
+ *
+ * @param {string} dataURL raw data display in string
+ * @return {object} Blob
+ */
 var dataURLToBlob = function(dataURL) {
 	var BASE64_MARKER = ';base64,';
 	if (dataURL.indexOf(BASE64_MARKER) == -1) {
@@ -110,7 +152,11 @@ var dataURLToBlob = function(dataURL) {
 	return new Blob([uInt8Array], {type: contentType});
 }
 
-// loading effect for button
+/** 
+ * Loading effect for button
+ *
+ * @param {object} e event
+ */
 var BUTTON_LOADING = function(e) {
 	e.preventDefault();
 	e.stopPropagation();

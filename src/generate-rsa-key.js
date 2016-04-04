@@ -1,6 +1,9 @@
 ob('btnGenerateRSAKey').addEventListener('click', generateRSAKey);
 ob('btnSaveRSAKey').addEventListener('click', saveRSAKey);
 
+/**
+ * Generate new RSA Key
+ */
 function generateRSAKey () {
 
 	// Email is used to seed random in cryptico library by this statement:
@@ -27,6 +30,9 @@ function generateRSAKey () {
 	jQuery('#keys').fadeIn();
 }
 
+/**
+ * Save RSA Key to Chrome LocalStorage
+ */
 function saveRSAKey () {
 	$('#btnSaveRSAKey').text('Saving...');
 	var email = ob('email').value.trim();

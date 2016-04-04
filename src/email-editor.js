@@ -45,7 +45,7 @@ ob('attach').addEventListener('change', handleFileSelect, false);
 /**
  * Encrypt attachments
  *
- * @param {evt} event button clicked or null
+ * @param {object} evt event button clicked or null
  */
 function encryptFile (evt) {
 	var date1 = new Date();
@@ -186,9 +186,9 @@ function encryptEmail () {
 /**
  * Encrypt 1 single email for 1 recipient.
  *
- * @param {recipient} Email address of recipient
- * @param {plainText} The original email that will be encrypt
- * @param {obj} Flags
+ * @param {string} recipient Email address of recipient
+ * @param {string} plainText The original email that will be encrypt
+ * @param {object} obj Flags
  */
 function ee (recipient, plainText, obj) {
 	chrome.storage.sync.get(recipient, function (items) {

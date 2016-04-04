@@ -115,6 +115,9 @@ function addEventBtns () {
 	}
 }
 
+/**
+ * Show private key
+ */
 ob('btnShowPrivateKey').addEventListener('click', function () {
 	var email = ob('email').innerHTML;
 	var priv = ob('privKey').getAttribute('data');
@@ -142,12 +145,12 @@ ob('btnShowPrivateKey').addEventListener('click', function () {
 	}
 })
 
-// 
+// Handle buttons' click event
 document.addEventListener('DOMContentLoaded', function () {
 	setTimeout(addEventBtns, 100);
 })
 
-
+// Import public key of other people, save to Chrome LocalStorage
 ob('btnImportPublicKey').addEventListener('click', function () {
 	var p = ob('pub').value;
 	if (p.length < 1){
@@ -198,6 +201,7 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 	})
 });
 
+// Import Key Pair, save to Chrome LocalStorage
 ob('btnImportKeyPair').addEventListener('click', function () {
 	var encryptedPriv = ob('priv').value;
 	var passphrase = ob('passphrase').value;
