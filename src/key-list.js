@@ -15,10 +15,6 @@ var ul = ob('ulKeys');
 					li.appendChild(span);
 					li.setAttribute('class', 'list-group-item');
 					li.style.height = '60px';
-					// li.addEventListener('click', function () {
-					// 	alert(key.public);
-					// 	console.log(key.public);
-					// })
 					var div = document.createElement('div');
 					div.style.display = 'inline-block';
 					li.appendChild(div);

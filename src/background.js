@@ -10,7 +10,8 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.actionType == 'open-encrypt-frame')
 	chrome.windows.create({
-		url: '/src/email-editor.html'
+		url: '/src/email-editor.html',
+		type: 'panel'
 	});
 	chrome.extension.onConnect.addListener(function (port) {
 		port.postMessage({
@@ -54,7 +55,7 @@ chrome.contextMenus.create({
 function clickHandler (data, tab) {
 	chrome.windows.create({
 		url: "/src/decrypt-email.html",
-		// type: "panel"
+		type: "panel"
 	});
 	var b = true; // detect if user use context menu
 	chrome.extension.onConnect.addListener(function(port) {
