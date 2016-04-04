@@ -8,12 +8,12 @@ var LOCAL_KEY = '8499a08c77ba81cd35d8e93642da34b6';
 // Extension saves data to this StorageArea
 var STORAGE_AREA = chrome.storage.sync;
 
-// seperator file dataURL with this string. Need to be long and semantic enough.
+// seperate file dataURL with this string. Need to be long and semantic enough.
 // Or, this can be some character which is not included in Base64 index table. 
 // Such as '?', '!', ....
 var STR_SEPERATOR = 'ngocdon';
 
-// properties will be used in RSA Key object.
+// properties in RSA Key object.
 var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
 
 /**
