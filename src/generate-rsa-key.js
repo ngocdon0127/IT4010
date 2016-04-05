@@ -9,6 +9,23 @@ function generateRSAKey () {
 	// Email is used to seed random in cryptico library by this statement:
 	// Math.seedrandom(sha256.hex(email));
 	var email = ob('email').value.trim();
+	if (email.length < 1){
+		alert('Email must not be null.');
+		return;
+	}
+
+	// check if email is valid or not.
+	var emailRegex = /.+@.+\..+/;
+	if (emailRegex.test(email) == false){
+		alert('Invalid email.');
+		return;
+	}
+
+	var passphrase = ob('passphrase').value;
+	if (passphrase.length < 1){
+		alert('Passphrase must not be null.');
+		return;
+	}
 
 	// generate a unique number
 	var date = (new Date()).getTime();
