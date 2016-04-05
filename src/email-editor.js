@@ -134,7 +134,8 @@ function encryptEmail () {
 	// reset field.
 	jQuery('#encrypted').val('');
 	// generate a random key
-	aesKeyFile = (new Date()).getTime() + ' ';
+	Math.seedrandom((new Date()).getTime() + ' ');
+	aesKeyFile = (new Date()).getTime() + ' ' + Math.random();
 	aesKeyFile = CryptoJS.MD5(aesKeyFile).toString(CryptoJS.enc.Base16);
 
 	// add aesKeyFile to the original email.
