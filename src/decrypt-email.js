@@ -39,7 +39,7 @@ function decryptFile () {
 
 	// check file name.
 	if (ob('attach').files[0].name.indexOf('.encrypted') < 0){
-		alert('Chọn file .encrypted để giải mã.');
+		alert('Choose *.encrypted file to decrypt.');
 		return;
 	}
 
@@ -66,7 +66,7 @@ function decryptFile () {
 					ob('btnDecrypt').removeAttribute('disabled');
 				}
 				catch (e){
-					alert('Key không đúng');
+					alert('Invalid key.');
 					ob('btnDecrypt').classList.remove('loading');
 					ob('btnDecrypt').removeAttribute('disabled');
 				}
@@ -161,7 +161,7 @@ function decryptEmail(data) {
 		if (items[data[1]].isPairKey == 1){
 			try {
 				var privateKey = items[data[1]].private;
-				var passphrase = prompt('Nhập passphrase của ' + data[1] + ':', '');
+				var passphrase = prompt('Insert passphrase of ' + data[1] + ':', '');
 				privateKey = CryptoJS.AES.decrypt(privateKey, passphrase).toString(CryptoJS.enc.Utf8);
 				privateKey = preDecrypt(privateKey);
 				var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));

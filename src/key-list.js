@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
 ob('btnImportPublicKey').addEventListener('click', function () {
 	var p = ob('pub').value;
 	if (p.length < 1){
-		alert('Nhập public key.');
+		alert('Insert public key.');
 		return;
 	}
 	publicKey = preDecrypt(p);
@@ -167,7 +167,7 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 	 */
 	var data = publicKey.split('|');
 	if (data.length < 2){
-		alert('Public key không đúng.');
+		alert('Public key is invalid.');
 		return;
 	}
 	console.log(publicKey);

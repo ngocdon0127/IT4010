@@ -4,6 +4,7 @@ importScripts('/crypto-js/build/components/enc-base64-min.js');
 // seperator file dataURL with this string. Need to be long and semantic enough.
 // Or, this can be some character which is not included in Base64 index table. 
 // Such as '?', '!', ....
+// Must be synchronized with the same variable in consts-and-funcs.js
 var STR_SEPERATOR = 'ngocdon';
 
 onmessage = function (msg) {

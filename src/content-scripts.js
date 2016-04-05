@@ -8,7 +8,7 @@ var editable = '';
 
 // button to render extension frame
 var e = document.createElement('div');
-e.innerHTML = 'hehe';
+e.innerHTML = 'E2EE';
 e.id = 'eframe-cryptojs';
 e.addEventListener('click', clickHandler);
 
@@ -35,6 +35,7 @@ setTimeout(function () {
 }, 5000);
 var fRender = function () {
 	try{
+		// try to bind Gmail editor
 		editable = document.getElementsByClassName('Am Al editable LW-avf')[0];
 		element = editable.parentElement;
 
