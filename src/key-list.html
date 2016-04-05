@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>List of saved key</title>
 	<link rel="stylesheet" href="/res/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/res/key-list.css">
 	<script src="/res/jquery.js"></script>
 	<script src="/res/bootstrap.min.js"></script>
 	<script language="JavaScript" type="text/javascript" src="/cryptico/jsbn.js"></script>
@@ -19,19 +20,56 @@
 	<script src="/src/consts-and-funcs.js"></script>
 </head>
 <body>
-	<div class="container-fluid col-md-4 col-md-offset-4" style="margin-top:20px">
-		<div class="form-group">
-			<ul id="ulKeys" class="list-group"></ul>
+	<nav class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">IT4010</a>
+			</div>
+
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="collapse navbar-collapse navbar-ex1-collapse">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Home</a></li>
+					<li><a href="#">About</a></li>
+				</ul>
+			</div><!-- /.navbar-collapse -->
 		</div>
-		<div class="form-group">
-			<a class="btn btn-primary" data-toggle="modal" href='#modal-import-public-key'>Import Public Key</a>
-			<a class="btn btn-primary" data-toggle="modal" href='#modal-import-key-pair'>Import Key Pair</a>
+	</nav>
+	<div class="col-md-12 side">
+		<div class="col-md-2">
+			<p></p>
 		</div>
-		<div class="form-group">
-			<a href="generate-rsa-key.html" class="btn btn-success">Generate new key pair</a>
+		<div class="container col-md-8 content">
+			<div class="form-group">
+				<ul id="ulKeys" class="list-group"></ul>
+			</div>
+			<h2>Setup</h2>
+			<ul class="list-group">
+				<li class="list-group-item">
+					<h3>Import public key</h3>
+					<h4>Import someone's Public Key to send email to him in a safe way</h4>
+					<a class="btn btn-primary" data-toggle="modal" href='#modal-import-public-key'>Import Public Key</a>
+				</li>
+				<li class="list-group-item">
+					<h3>Import key pair</h3>
+					<h4>You already have a keypair on another device? You can import your existing keys. Just export the keypair on your other device and import it here.</h4>
+					<a class="btn btn-primary" data-toggle="modal" href='#modal-import-key-pair'>Import Key Pair</a>
+				</li>
+				<li class="list-group-item">
+					<h3>Generate key</h3>
+					<h4>If you're using this extension for the first time and you don't have a keypair yet, you need to generate a key.</h4>
+					<a href="generate-rsa-key.html" class="btn btn-success">Generate new key pair</a>
+					</li>
+			</ul>
 		</div>
 	</div>
-
 	<div class="modal fade" id="modal-import-public-key">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -87,11 +125,9 @@
 				<div class="modal-body">
 					<div class="container-fluid">
 						<div class="form-group">
-							<label for="pubKey">Public Key</label>
 							<textarea name="pubKey" id="pubKey" cols="30" rows="10"class="form-control" ></textarea>
 						</div>
 						<div class="form-group">
-							<label for="privKey">Private Key</label>
 							<textarea name="privKey" id="privKey" cols="30" rows="10" class="form-control" placeholder="Private Key"></textarea>
 						</div>
 					</div>
@@ -103,6 +139,9 @@
 			</div>
 		</div>
 	</div>
+	<footer class = "col-md-12">
+		<center style="padding-top: 15px;" >&copy; 2015-2016</center>
+	</footer>
 	<script src="key-list.js"></script>
 </body>
 </html>
