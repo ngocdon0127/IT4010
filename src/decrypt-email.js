@@ -135,7 +135,7 @@ port.onMessage.addListener(function(msg) {
 /**
  * Decrypt encrypted email
  *
- * @param {string} data encrypted email
+ * @param {string} data Encrypted email
  */
 function decryptEmail(data) {
 	data = preDecrypt(data);

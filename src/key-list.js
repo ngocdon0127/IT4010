@@ -120,6 +120,7 @@ function addEventBtns () {
  */
 ob('btnShowPrivateKey').addEventListener('click', function () {
 	var email = ob('email').innerHTML;
+	ob('privKey').innerHTML = ob('privKey').value = '';
 	var priv = ob('privKey').getAttribute('data');
 	if (priv.length < 1){
 		alert('Private Key of ' + email + ' is not exist.');
@@ -138,6 +139,7 @@ ob('btnShowPrivateKey').addEventListener('click', function () {
 		}
 		else{
 			ob('privKey').innerHTML = priv;
+			ob('privKey').value = priv;
 		}
 	}
 	catch (e){
@@ -195,7 +197,9 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 				private: ''
 			}
 			STORAGE_AREA.set(ob, function () {
-				addIndexes(email);
+				addIndexes(email, function () {
+					location.reload(true);
+				});
 			});
 		}
 	})
@@ -242,7 +246,9 @@ ob('btnImportKeyPair').addEventListener('click', function () {
 					private: encryptedPriv
 				}
 				STORAGE_AREA.set(ob, function () {
-					addIndexes(email);
+					addIndexes(email, function () {
+						location.reload(true);
+					});
 				});
 			}
 		})

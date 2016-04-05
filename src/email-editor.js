@@ -45,7 +45,7 @@ ob('attach').addEventListener('change', handleFileSelect, false);
 /**
  * Encrypt attachments
  *
- * @param {object} evt event button clicked or null
+ * @param {object} evt Event button clicked or null
  */
 function encryptFile (evt) {
 	var date1 = new Date();

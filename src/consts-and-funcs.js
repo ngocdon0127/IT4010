@@ -38,7 +38,7 @@ Just to make the key looks more beautiful. lol
 /**
  * Encrypt with LOCAL_KEY
  *
- * @param {string} x string to be encrypted
+ * @param {string} x String to be encrypted
  * @return {string} encrypted string with LOCAL_KEY
  */
 function preEncrypt(x) {
@@ -48,7 +48,7 @@ function preEncrypt(x) {
 /**
  * Decrypt with LOCAL_KEY
  *
- * @param {string} x string to be decrypted
+ * @param {string} x String to be decrypted
  * @return {string} the original text
  */
 function preDecrypt (x) {
@@ -59,9 +59,10 @@ function preDecrypt (x) {
 /**
  * Add new email to indexes list.
  *
- * @param {string} email email to be added to indexes[] in Chrome LocalStorage
+ * @param {string} email Email to be added to indexes[] in Chrome LocalStorage
+ * @param {function} fn Function will be executed after adding email
  */
-function addIndexes (email) {
+function addIndexes (email, fn) {
 	STORAGE_AREA.get('indexes', function (items) {
 		var indexes = [];
 		if (jQuery.isEmptyObject(items)){
@@ -73,9 +74,7 @@ function addIndexes (email) {
 		}
 		chrome.storage.sync.set({
 			indexes: indexes
-		}, function () {
-
-		});
+		}, fn);
 	});
 }
 
@@ -125,7 +124,7 @@ cryptico.RSAKeyFromString = function(string) {
 /**
  * dataURLToBlob => get from https://github.com/ebidel/filer.js/blob/master/src/filer.js#L137
  *
- * @param {string} dataURL raw data display in string
+ * @param {string} dataURL Raw data display in string
  * @return {object} Blob
  */
 var dataURLToBlob = function(dataURL) {
@@ -155,7 +154,7 @@ var dataURLToBlob = function(dataURL) {
 /** 
  * Loading effect for button
  *
- * @param {object} e event
+ * @param {object} e Click event
  */
 var BUTTON_LOADING = function(e) {
 	e.preventDefault();
