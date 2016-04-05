@@ -1,0 +1,16 @@
+.content{
+	background-color: #ebebd1;
+}
+
+.side{
+	margin-bottom: 30px;
+}
+footer{
+	height: 50px;
+	position: fixed;
+	background-color: rgba(95,151,238,0.8);
+	border-radius: 2px;
+	display: block;
+	bottom: 0px;
+	z-index: 99;
+}
