@@ -1,8 +1,8 @@
 // Constants
 
 // Master key.
-// Extension use this key to encrypt original public & private key with AES algorithm
-// generate using MD5('local_key_extension_attt');
+// Extension use this key to encrypt original public & private key with AES algorithm.
+// generate using MD5('local_key_extension_attt')
 var LOCAL_KEY = '8499a08c77ba81cd35d8e93642da34b6';
 
 // Extension saves data to this StorageArea
@@ -15,6 +15,11 @@ var STR_SEPERATOR = 'ngocdon';
 
 // properties in RSA Key object.
 var parametersBigint = ["n", "d", "p", "q", "dmp1", "dmq1", "coeff"];
+
+// monospace
+var ALIGN_OPEN_TAG = "<pre>";
+
+var ALIGN_CLOSE_TAG = "</pre>";
 
 /**
  * Short hand
@@ -78,7 +83,7 @@ function addIndexes (email, fn) {
 	});
 }
 
-// Add new methods to work with private key
+// Add new 2 methods to work with private key
 
 /**
  * Extract Private Key from RSA Key object 
@@ -162,3 +167,45 @@ var BUTTON_LOADING = function(e) {
 	e.target.classList.add('loading');
 	e.target.setAttribute('disabled','disabled');
 };
+
+/**
+ * Beaurify Email
+ *
+ * @param {string} email Email suppose to be sent
+ * @return {string} aligned email
+ */
+function alignEmail (email) {
+	/**
+	 * Character ZERO WIDTH SPACE (unicode u200B - 8203) 
+	 * sometimes appears in selectionText when user double click.
+	 * remove it and trim() string before doing anything else
+	 */
+	email = email.replace(/\u200B/g, '').trim();
+	var charsInLine = 60;
+	var e = '';
+	while (email.length > 0){
+		e += email.substring(0, charsInLine);
+		e += "\n";
+		email = (email.length >= charsInLine) ? email.substring(charsInLine) : '';
+	}
+	return ALIGN_OPEN_TAG +  e.substring(0, e.length - 1) + ALIGN_CLOSE_TAG;
+}
+
+/**
+ * Convert aligned email to original email
+ *
+ * @param {string} email Aligned email
+ * @return {string} original email
+ */
+function deAlignEmail (email) {
+	/**
+	 * Character ZERO WIDTH SPACE (unicode u200B - 8203) 
+	 * sometimes appears in selectionText when user double click.
+	 * remove it and trim() string before doing anything else
+	 */
+	email = email.replace(/\u200B/g, '').trim();
+	email = email.replace(/ /g, '').trim();
+	// remove ALIGN TAGS
+	// email = email.substring(ALIGN_OPEN_TAG.length, email.length - ALIGN_CLOSE_TAG);
+	return email.split("\n").join('');
+}

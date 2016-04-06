@@ -90,8 +90,8 @@ port.onMessage.addListener(function(msg) {
 		return;
 	}
 	var d = msg.data;
-	$('#text').text(d);
-	$('#text').val(d);
+	$('#text').text(deAlignEmail(d));
+	$('#text').val(deAlignEmail(d));
 
 	// insert data to select#slRecipients
 	var contents = ob('text').value.split(STR_SEPERATOR);

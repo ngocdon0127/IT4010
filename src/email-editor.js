@@ -24,7 +24,7 @@ ob('btnTransfer').addEventListener('click', function () {
 	var port = chrome.extension.connect({name: 'transfer-encrypted-data'});
 	// send encrypted email to background page.
 	port.postMessage({
-		encryptedData: $('#encrypted').val()
+		encryptedData: alignEmail($('#encrypted').val())
 	});
 	window.close();
 });
