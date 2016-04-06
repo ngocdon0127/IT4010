@@ -161,7 +161,7 @@ function decryptEmail(data) {
 		if (items[data[1]].isPairKey == 1){
 			try {
 				var privateKey = items[data[1]].private;
-				var passphrase = prompt('Insert passphrase of ' + data[1] + ':', '');
+				var passphrase = prompt('Enter passphrase of ' + data[1] + ':', '');
 				privateKey = CryptoJS.AES.decrypt(privateKey, passphrase).toString(CryptoJS.enc.Utf8);
 				privateKey = preDecrypt(privateKey);
 				var plainText = cryptico.decrypt(data[0], cryptico.RSAKeyFromString(privateKey));

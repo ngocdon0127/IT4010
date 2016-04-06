@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>List of saved key</title>
+	<title>E2EE - IT4010</title>
 	<link rel="stylesheet" href="/res/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="/res/key-list.css">
 	<script src="/res/jquery.js"></script>
@@ -30,7 +30,7 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">IT4010</a>
+				<a class="navbar-brand" href="/src/key-list.html">IT4010</a>
 			</div>
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -48,13 +48,14 @@
 		</div>
 		<div class="container col-md-8 content">
 			<div class="form-group">
+				<h2>Key Management</h2>
 				<ul id="ulKeys" class="list-group"></ul>
 			</div>
 			<h2>Setup</h2>
 			<ul class="list-group">
 				<li class="list-group-item">
 					<h3>Import public key</h3>
-					<h4>Import someone's Public Key to send email to him in a safe way</h4>
+					<h4>Import someone's Public Key to email him in a safe way.</h4>
 					<a class="btn btn-primary" data-toggle="modal" href='#modal-import-public-key'>Import Public Key</a>
 				</li>
 				<li class="list-group-item">
@@ -79,7 +80,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="container-fluid">
-						<textarea name="pub" id="pub" cols="30" rows="10" class="form-control" placeholder="Insert Public key here."></textarea>
+						<textarea name="pub" id="pub" cols="30" rows="10" class="form-control" placeholder="Paste Public key here."></textarea>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -100,10 +101,10 @@
 				<div class="modal-body">
 					<div class="container-fluid">
 						<div class="form-group">
-							<textarea name="priv" id="priv" cols="30" rows="10" class="form-control" placeholder="Insert Private key here."></textarea>
+							<textarea name="priv" id="priv" cols="30" rows="10" class="form-control" placeholder="Paste Private key here."></textarea>
 						</div>
 						<div class="form-group">
-							<textarea name="passphrase" id="passphrase" cols="30" rows="3" class="form-control" placeholder="Insert passphrase of this private key."></textarea>
+							<textarea name="passphrase" id="passphrase" cols="30" rows="3" class="form-control" placeholder="Enter passphrase of this private key."></textarea>
 						</div>
 					</div>
 				</div>

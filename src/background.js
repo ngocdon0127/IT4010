@@ -2,7 +2,7 @@
 var sourceTabId = '';
 
 chrome.browserAction.onClicked.addListener(function (tab) {
-	chrome.tabs.create({url: '/src/popup.html'}, function (tab) {
+	chrome.tabs.create({url: '/src/key-list.html'}, function (tab) {
 		// body...
 	});
 })

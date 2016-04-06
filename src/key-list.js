@@ -126,7 +126,7 @@ ob('btnShowPrivateKey').addEventListener('click', function () {
 		alert('Private Key of ' + email + ' is not exist.');
 		return;
 	}
-	var passphrase = prompt('Insert passphrase for email ' + ob('email').innerHTML);
+	var passphrase = prompt('Enter passphrase for email ' + ob('email').innerHTML);
 	try{
 		var p = CryptoJS.AES.decrypt(priv, passphrase).toString(CryptoJS.enc.Utf8);
 		p = preDecrypt(p).split('|');
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
 ob('btnImportPublicKey').addEventListener('click', function () {
 	var p = ob('pub').value;
 	if (p.length < 1){
-		alert('Insert public key.');
+		alert('Paste public key.');
 		return;
 	}
 	publicKey = preDecrypt(p);
@@ -208,6 +208,10 @@ ob('btnImportPublicKey').addEventListener('click', function () {
 // Import Key Pair, save to Chrome LocalStorage
 ob('btnImportKeyPair').addEventListener('click', function () {
 	var encryptedPriv = ob('priv').value;
+	if (encryptedPriv.length < 1){
+		alert('Paste Private Key.');
+		return;
+	}
 	var passphrase = ob('passphrase').value;
 	try{
 		var priv = CryptoJS.AES.decrypt(encryptedPriv, passphrase).toString(CryptoJS.enc.Utf8);
