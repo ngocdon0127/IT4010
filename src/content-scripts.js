@@ -35,12 +35,17 @@ setTimeout(function () {
 }, 5000);
 var fRender = function () {
 	try{
+		// console.log(jQuery('.dL'));
+		// console.log(jQuery('.dL').children()[2]);
+		// jQuery('.dL').children()[2].mousedown();
+		// jQuery('.dL').children()[2].click();
+		// jQuery('.dL').children()[2].mouseup();
 		// try to bind Gmail editor
-		// editable = document.getElementsByClassName('Am Al editable LW-avf')[0];
+		editable = document.getElementsByClassName('Am Al editable LW-avf')[0];
 		// toolbar in Gmail editor.
 		var tr = document.getElementsByClassName('n1tfz')[0];
 		var div = null;
-		// element = editable.parentElement;
+		element = editable.parentElement;
 
 		// if Gmail editor is opening
 		if (tr != null){
