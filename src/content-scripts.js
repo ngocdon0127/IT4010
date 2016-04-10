@@ -8,7 +8,7 @@ var editable = '';
 
 // button to render extension frame
 var e = document.createElement('div');
-e.innerHTML = 'E2EE';
+e.innerHTML = 'Safe Send';
 e.id = 'eframe-cryptojs';
 e.addEventListener('click', clickHandler);
 
@@ -36,21 +36,28 @@ setTimeout(function () {
 var fRender = function () {
 	try{
 		// try to bind Gmail editor
-		editable = document.getElementsByClassName('Am Al editable LW-avf')[0];
-		element = editable.parentElement;
+		// editable = document.getElementsByClassName('Am Al editable LW-avf')[0];
+		// toolbar in Gmail editor.
+		var tr = document.getElementsByClassName('n1tfz')[0];
+		var div = null;
+		// element = editable.parentElement;
 
 		// if Gmail editor is opening
-		if (element != null){
+		if (tr != null){
 			var check = 0;
-			for (var i = 0; i < element.children.length; i++) {
-				child = element.children[i];
+			var td = tr.children[3];
+			div = td.children[0];
+			for (var i = 0; i < div.children.length; i++) {
+				child = div.children[i];
 				if (child.id == 'eframe-cryptojs'){
 					check = 1;
 					break;
 				}
 			}
 			if (check != 1){
-				element.appendChild(e);
+				// element.appendChild(e);
+				e.setAttribute('class', 'wG J-Z-I btn btn-primary');
+				div.appendChild(e);
 			}
 			else{
 			}
