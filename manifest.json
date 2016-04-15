@@ -1,5 +1,5 @@
 {
-	"name": "E2EE",
+	"name": "IT4010",
 	"description": "Safe Email",
 	"version": "2.0",
 	"permissions": [
@@ -10,7 +10,7 @@
 		"contextMenus"
 	],
 	"browser_action": {
-		"default_title": "E2EE"
+		"default_title": "IT4010"
 	},
 	"applications":{
 		"gecko": {
