@@ -213,7 +213,17 @@ ob('btnDecrypt').addEventListener('click', function () {
 	while (emailRegex.test(emailAddress) === false){
 		emailAddress = prompt('Failed to get Gmail address. Please enter your Gmail address manually.');
 	}
-	decryptEmail(singleEmails[emailAddress]);
+	try{
+		decryptEmail(singleEmails[emailAddress]);
+	}
+	catch (e){
+		alert('This email is not encrypted for you or\nThe sender did not have your Public Key.');
+		setTimeout(function () {
+			ob('btnDecrypt').classList.remove('loading');
+			ob('btnDecrypt').removeAttribute('disabled');
+		}, 1000);
+		return;
+	}
 });
 
 // Add loading effect

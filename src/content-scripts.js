@@ -8,7 +8,7 @@ var editable = '';
 
 // button to render extension frame
 var e = document.createElement('div');
-e.innerHTML = 'Safe Send';
+e.innerHTML = 'Encrypt';
 e.id = 'eframe-cryptojs';
 e.addEventListener('click', clickHandler);
 
