@@ -12,14 +12,25 @@ e.innerHTML = 'Safe Send';
 e.id = 'eframe-cryptojs';
 e.addEventListener('click', clickHandler);
 
+setTimeout(function () {
+	chrome.runtime.sendMessage({
+			actionType: 'send-email-address',
+			emailAddress: getEmailAddress()
+		}, 
+		function (response) {
+
+	});
+}, 3000);
+
 /**
  * Render button
  */
 function clickHandler() {
 	// console.log('clicked');
-	chrome.runtime.sendMessage({
+	chrome.runtime.sendMessage(
+		{
 			actionType: 'open-encrypt-frame',
-			emailContent: document.getElementsByClassName('Am Al editable LW-avf')[0].innerHTML
+			emailContent: document.getElementsByClassName('Am Al editable LW-avf')[0].innerHTML,
 		}, 
 		function (response) {
 
@@ -76,9 +87,30 @@ var fRender = function () {
 // receive encrypted email
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	if (request.encryptedData != null){
-		console.log(sender);
-		console.log(request);
+		// console.log(sender);
+		// console.log(request);
 		editable.value = request.encryptedData;
 		editable.innerHTML = request.encryptedData;
 	}
 });
+
+function getEmailAddress () {
+	var emailAddress = '';
+	// Gmail
+	if (window.location.hostname === 'mail.google.com'){
+		var ea = document.getElementsByClassName('gb_ob')[0];
+		// console.log('gb_ob');
+		// console.log(ea.innerHTML);
+		var emailRegex = /.+@.+\..+/;
+		if (emailRegex.test(ea.innerHTML) !== false){
+			return ea.innerHTML;
+		}
+		ea = document.getElementsByClassName('gb_pb')[0];
+		// console.log('gb_pb');
+		// console.log(ea.innerHTML);
+		if (emailRegex.test(ea.innerHTML) !== false){
+			return ea.innerHTML;
+		}
+		return false;
+	}
+}

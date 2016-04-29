@@ -51,38 +51,44 @@ function generateRSAKey () {
  * Save RSA Key to Chrome LocalStorage
  */
 function saveRSAKey () {
-	$('#btnSaveRSAKey').text('Saving...');
-	var email = ob('email').value.trim();
-	chrome.storage.sync.get(email, function (items) {
-		if (!jQuery.isEmptyObject(items)){
-			var c = confirm('This email has already had a key pair. Overwrite?');
-			$('#btnSaveRSAKey').text('Save RSA Key');
-			if (c == false){
-				return;
-			}
-		}
-		else{
-			addIndexes(email);
-		}
-		var data = {};
-		data[email] = {
-			public: ob('pub').value,
-			// private: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
-			private: ob('priv').value,
-			isPairKey: 1
-		}
-		chrome.storage.sync.set(data, function () {
-			if (typeof(chrome.runtime.lastError) !== 'undefined'){
-				console.log('error');
+	// chrome
+	if (detectChrome()){
+		$('#btnSaveRSAKey').text('Saving...');
+		var email = ob('email').value.trim();
+		chrome.storage.sync.get(email, function (items) {
+			if (!jQuery.isEmptyObject(items)){
+				var c = confirm('This email has already had a key pair. Overwrite?');
 				$('#btnSaveRSAKey').text('Save RSA Key');
+				if (c == false){
+					return;
+				}
 			}
 			else{
-				console.log('ok');
-				$('#btnSaveRSAKey').text('Save RSA Key');
-				alert('Key Pair is saved.');
+				addIndexes(email);
 			}
+			var data = {};
+			data[email] = {
+				public: ob('pub').value,
+				// private: CryptoJS.AES.encrypt(ob('priv').value, ob('passphrase').value).toString(),
+				private: ob('priv').value,
+				isPairKey: 1
+			}
+			chrome.storage.sync.set(data, function () {
+				if (typeof(chrome.runtime.lastError) !== 'undefined'){
+					console.log('error');
+					$('#btnSaveRSAKey').text('Save RSA Key');
+				}
+				else{
+					console.log('ok');
+					$('#btnSaveRSAKey').text('Save RSA Key');
+					alert('Key Pair is saved.');
+				}
+			});
 		});
-	});
+	}
+	else{
+		
+	}
 }
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {

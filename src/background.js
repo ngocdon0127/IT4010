@@ -1,6 +1,9 @@
 // id of Gmail tab.
 var sourceTabId = '';
 
+// gmail address
+var emailAddress = '';
+
 chrome.browserAction.onClicked.addListener(function (tab) {
 	chrome.tabs.create({url: '/src/key-list.html'}, function (tab) {
 		// body...
@@ -18,6 +21,18 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 			url: '/src/email-editor.html',
 			type: 'panel'
 		});
+	}
+	else if (request.actionType === 'send-email-address'){
+		emailAddress = request.emailAddress;
+		return;
+	}
+
+	else if (request.actionType === 'get-email-address'){
+		sendResponse({
+			actionType: 'return-email-address',
+			email: emailAddress
+		});
+		return;
 	}
 
 	// email editor window establishes a port to request email content from Gmail tab.
@@ -66,13 +81,3 @@ function clickHandler (data, tab) {
 	});
 }
 
-// // Get Gmail address
-// function getCurrentGmailAddr () {
-// 	alert('start hehe');
-// 	var e = document.getElementsByName('tôi');
-// 	alert(e.length);
-// 	if (e.length < 1){
-// 		e = document.getElementsByName('me');
-// 	}
-// 	alert(e[0].getAttribute('email'));
-// }

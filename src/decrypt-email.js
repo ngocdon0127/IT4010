@@ -1,5 +1,8 @@
 'use strict';
 
+// Gmail Address
+var emailAddress = '';
+
 // Log data to console when user choose files.
 function handleFileSelect (event) {
 	var files = event.target.files;
@@ -79,8 +82,18 @@ function decryptFile () {
 	}
 }
 
+// get email address
+chrome.runtime.sendMessage({actionType: 'get-email-address'}, function (response) {
+	if (response.actionType === 'return-email-address'){
+		emailAddress = response.email;
+		console.log(emailAddress);
+		return;
+	}
+});
+
 // connect to background page
 var port = chrome.extension.connect({name: "Retrieve decrypted email"});
+
 port.onMessage.addListener(function(msg) {
 	
 	if (!msg.hasOwnProperty('data')){
@@ -93,7 +106,6 @@ port.onMessage.addListener(function(msg) {
 	$('#text').text(deAlignEmail(d));
 	$('#text').val(deAlignEmail(d));
 
-	// insert data to select#slRecipients
 	var contents = ob('text').value.split(STR_SEPERATOR);
 	console.log(contents);
 	contents.forEach(function (content) {
@@ -120,12 +132,6 @@ port.onMessage.addListener(function(msg) {
 		}
 		var emailContent = data[0];
 		var recipient = data[1];
-		log('recipient');
-		log(recipient);
-		var e = document.createElement('option');
-		e.value = recipient;
-		e.innerHTML = recipient;
-		ob('slRecipients').appendChild(e);
 
 		// fill data to singleEmails object
 		singleEmails[recipient] = content;
@@ -203,7 +209,11 @@ function decryptEmail(data) {
 }
 
 ob('btnDecrypt').addEventListener('click', function () {
-	decryptEmail(singleEmails[ob('slRecipients').value]);
+	var emailRegex = /.+@.+\..+/;
+	while (emailRegex.test(emailAddress) === false){
+		emailAddress = prompt('Failed to get Gmail address. Please enter your Gmail address manually.');
+	}
+	decryptEmail(singleEmails[emailAddress]);
 });
 
 // Add loading effect
