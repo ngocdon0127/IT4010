@@ -94,6 +94,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 });
 
+/**
+ * get Gmail Address of opening tab
+ *
+ * @return {string} Gmail Address
+ */
 function getEmailAddress () {
 	var emailAddress = '';
 	// Gmail
